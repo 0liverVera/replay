@@ -39,8 +39,8 @@
   border-radius: 12px;
   box-shadow:
     0 0 0 1px #2a2a2a,
-    0 0 60px rgba(255, 107, 0, 0.1),
-    0 0 120px rgba(255, 107, 0, 0.04),
+    0 0 60px rgba(0, 212, 255, 0.1),
+    0 0 120px rgba(0, 212, 255, 0.04),
     inset 0 0 40px rgba(0,0,0,0.6);
   overflow: hidden;
 
@@ -179,7 +179,7 @@
   border: 2px solid rgba(255,255,255,0.1);
 }
 .bezel-btn-circle.red  { background: rgba(255, 50, 50, 0.4); }
-.bezel-btn-circle.blue { background: rgba(255, 107, 0, 0.3); }
+.bezel-btn-circle.blue { background: rgba(0, 212, 255, 0.3); }
 
 /* ---- Game Overlay (Start / Game Over) ---- */
 .game-overlay {

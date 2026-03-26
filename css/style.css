@@ -10,7 +10,7 @@
   --color-bg-card:    #111111;
   --color-border:     #1e1e1e;
 
-  --color-blue:       #FF6B00;
+  --color-blue:       #00d4ff;
   --color-pink:       #ff0080;
   --color-green:      #00ff41;
   --color-yellow:     #ffd700;
@@ -20,7 +20,7 @@
   --font-pixel:       'Press Start 2P', monospace;
   --font-body:        'Space Grotesk', sans-serif;
 
-  --glow-blue:        0 0 8px rgba(255, 107, 0, 0.6), 0 0 20px rgba(255, 107, 0, 0.3);
+  --glow-blue:        0 0 8px rgba(0, 212, 255, 0.6), 0 0 20px rgba(0, 212, 255, 0.3);
   --glow-pink:        0 0 8px rgba(255, 0, 128, 0.6), 0 0 20px rgba(255, 0, 128, 0.3);
   --glow-green:       0 0 8px rgba(0, 255, 65, 0.6),  0 0 20px rgba(0, 255, 65, 0.3);
 
@@ -137,8 +137,8 @@ body { animation: screenFlicker 8s infinite; }
 }
 .nav-back:hover {
   color: var(--color-blue);
-  border-color: rgba(255, 107, 0, 0.5);
-  box-shadow: 0 0 8px rgba(255, 107, 0, 0.15);
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.15);
 }
 
 .nav-right {
@@ -179,7 +179,7 @@ body { animation: screenFlicker 8s infinite; }
 }
 .btn-wallet:hover,
 .btn-wallet.connected {
-  background: rgba(255, 107, 0, 0.1);
+  background: rgba(0, 212, 255, 0.1);
   box-shadow: var(--glow-blue);
 }
 
@@ -226,11 +226,11 @@ body { animation: screenFlicker 8s infinite; }
 
 .wallet-modal {
   background: #111;
-  border: 1px solid rgba(255, 107, 0, 0.3);
+  border: 1px solid rgba(0, 212, 255, 0.3);
   border-radius: 12px;
   box-shadow:
-    0 0 30px rgba(255, 107, 0, 0.12),
-    0 0 80px rgba(255, 107, 0, 0.06),
+    0 0 30px rgba(0, 212, 255, 0.12),
+    0 0 80px rgba(0, 212, 255, 0.06),
     inset 0 0 30px rgba(0, 0, 0, 0.4);
   padding: 2.5rem 2rem;
   max-width: 460px;
@@ -298,7 +298,7 @@ body { animation: screenFlicker 8s infinite; }
 }
 .wallet-modal-input:focus {
   border-color: var(--color-blue);
-  box-shadow: 0 0 12px rgba(255, 107, 0, 0.2);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
 }
 .wallet-modal-input.error {
   border-color: var(--color-pink);
@@ -550,7 +550,7 @@ body { animation: screenFlicker 8s infinite; }
   letter-spacing: 0.05em;
   line-height: 1.2;
   margin-bottom: 1.5rem;
-  text-shadow: 0 0 40px rgba(255, 107, 0, 0.15);
+  text-shadow: 0 0 40px rgba(0, 212, 255, 0.15);
 }
 
 /* Blinking cursor */
@@ -565,10 +565,10 @@ body { animation: screenFlicker 8s infinite; }
 
 /* Glitch effect on hero title */
 @keyframes glitch {
-  0%, 90%, 100% { transform: translate(0); text-shadow: 0 0 40px rgba(255, 107, 0, 0.15); }
+  0%, 90%, 100% { transform: translate(0); text-shadow: 0 0 40px rgba(0, 212, 255, 0.15); }
   91% { transform: translate(-2px, 0); text-shadow: 2px 0 var(--color-pink); }
   92% { transform: translate(2px, 0);  text-shadow: -2px 0 var(--color-blue); }
-  93% { transform: translate(0); text-shadow: 0 0 40px rgba(255, 107, 0, 0.15); }
+  93% { transform: translate(0); text-shadow: 0 0 40px rgba(0, 212, 255, 0.15); }
 }
 .hero-title { animation: glitch 6s infinite; }
 
@@ -690,7 +690,7 @@ body { animation: screenFlicker 8s infinite; }
   padding: 1.5rem 1.5rem 1rem;
   box-shadow:
     0 0 0 1px #1a1a1a,
-    0 0 40px rgba(255, 107, 0, 0.08),
+    0 0 40px rgba(0, 212, 255, 0.08),
     inset 0 0 30px rgba(0,0,0,0.5);
 }
 
@@ -927,8 +927,8 @@ body { animation: screenFlicker 8s infinite; }
   transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
 .wi-card:hover {
-  border-color: rgba(255, 107, 0, 0.4);
-  box-shadow: 0 0 20px rgba(255, 107, 0, 0.08);
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.08);
   transform: translateY(-2px);
 }
 .wi-card-icon {
@@ -988,7 +988,7 @@ body { animation: screenFlicker 8s infinite; }
   transition: background var(--transition);
 }
 .lb-table tbody tr:last-child td { border-bottom: none; }
-.lb-table tbody tr:hover td { background: rgba(255, 107, 0, 0.04); }
+.lb-table tbody tr:hover td { background: rgba(0, 212, 255, 0.04); }
 .lb-gold td   { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
 .lb-silver td { color: #C0C0C0; text-shadow: 0 0 10px rgba(192, 192, 192, 0.4); }
 .lb-bronze td { color: #CD7F32; text-shadow: 0 0 10px rgba(205, 127, 50, 0.4); }
