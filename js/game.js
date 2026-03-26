@@ -24,9 +24,9 @@
     OBSTACLE_WIDTH_MAX:  80,
     OBSTACLE_HEIGHT_MIN: 35,
     OBSTACLE_HEIGHT_MAX: 55,
-    OBSTACLE_SPEED_BASE: 1.2,   // start very slow
+    OBSTACLE_SPEED_BASE: 2.2,   // start moderate
     OBSTACLE_SPEED_MAX:  14,    // max speed — fast but readable
-    OBSTACLE_SPAWN_RATE: 160,   // start sparse
+    OBSTACLE_SPAWN_RATE: 140,   // start moderate
     OBSTACLE_SPAWN_MIN:  28,    // end dense but not overwhelming
 
     // Quarters (collectibles)
@@ -42,10 +42,10 @@
 
     // Scoring
     SCORE_PER_FRAME:    1,
-    SPEED_RAMP_INTERVAL: 700,   // ramp every ~12s — slow build
-    SPEED_RAMP_AMOUNT:   0.5,   // modest jumps
-    SPAWN_RAMP_INTERVAL: 900,
-    SPAWN_RAMP_AMOUNT:   6,     // gradual density increase
+    SPEED_RAMP_INTERVAL: 480,   // ramp every ~8s
+    SPEED_RAMP_AMOUNT:   0.7,   // noticeable jumps
+    SPAWN_RAMP_INTERVAL: 600,
+    SPAWN_RAMP_AMOUNT:   8,
 
     // Colors
     COLOR_BG:       '#000000',
@@ -168,8 +168,8 @@
   }
 
   function updateScoreDisplays() {
-    if (scoreDisplay)   scoreDisplay.textContent   = String(state.score).padStart(5, '0');
-    if (hiScoreDisplay) hiScoreDisplay.textContent = String(state.hiScore).padStart(5, '0');
+    if (scoreDisplay)   scoreDisplay.textContent   = String(Math.floor(state.score)).padStart(5, '0');
+    if (hiScoreDisplay) hiScoreDisplay.textContent = String(Math.floor(state.hiScore)).padStart(5, '0');
   }
 
   /* ============================================
