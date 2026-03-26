@@ -38,20 +38,28 @@
     <div class="wallet-modal">
       <button class="wallet-modal-close" id="walletModalClose" aria-label="Close">&times;</button>
       <h2 class="wallet-modal-title">SIGN IN TO PLAY</h2>
-      <button class="btn-x" id="xLoginBtn">
-        <span class="btn-x-icon">𝕏</span>
-        SIGN IN WITH X
-      </button>
-      <div class="modal-divider">OR</div>
-      <p class="wallet-modal-sub">Paste your Solana address. No permissions. No approvals. Just you.</p>
-      <input
-        type="text"
-        class="wallet-modal-input"
-        id="walletInput"
-        placeholder="Paste your Solana wallet address..."
-        autocomplete="off"
-        spellcheck="false"
-      />
+      <div class="modal-field">
+        <label class="modal-label" for="xUsernameInput">X / TWITTER HANDLE <span class="modal-label-opt">(optional)</span></label>
+        <input
+          type="text"
+          class="wallet-modal-input"
+          id="xUsernameInput"
+          placeholder="@yourhandle"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="walletInput">SOLANA WALLET</label>
+        <input
+          type="text"
+          class="wallet-modal-input"
+          id="walletInput"
+          placeholder="Paste your wallet address..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
       <div class="wallet-modal-error hidden" id="walletError">Invalid wallet address</div>
       <button class="btn-primary wallet-modal-confirm" id="walletConfirm">CONFIRM</button>
     </div>

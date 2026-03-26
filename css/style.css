@@ -314,6 +314,25 @@ body { animation: screenFlicker 8s infinite; }
   letter-spacing: 0.05em;
 }
 
+.modal-field {
+  margin-bottom: 0.9rem;
+}
+.modal-label {
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: 0.35rem;
+  color: var(--color-muted);
+  letter-spacing: 0.12em;
+  margin-bottom: 0.35rem;
+}
+.modal-label-opt {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: #333;
+  letter-spacing: 0;
+  text-transform: lowercase;
+}
+
 .wallet-modal-confirm {
   margin-top: 1.5rem;
   font-size: 0.55rem;

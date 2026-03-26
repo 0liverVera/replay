@@ -1092,14 +1092,23 @@
 
         showOverlay(gameOverScreen);
 
-        // Re-render leaderboard with player's score highlighted, then auto-scroll
-        if (window.replayRenderLeaderboard) {
-          window.replayRenderLeaderboard('gameLbBody', 10, Math.floor(state.score));
+        var finalScoreVal = Math.floor(state.score);
+
+        // Submit score to Supabase (if logged in + configured)
+        if (window.replaySubmitScore) {
+          window.replaySubmitScore(finalScoreVal);
         }
+
+        // Reload leaderboard with real data + highlight where this score lands
+        if (window.replayLoadLeaderboard) {
+          window.replayLoadLeaderboard('gameLbBody', 10, finalScoreVal);
+        }
+
+        // Scroll to leaderboard after a short delay
         setTimeout(function () {
           var lb = document.getElementById('leaderboard');
           if (lb) lb.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 500);
+        }, 700);
       }
     }
 
@@ -1280,9 +1289,9 @@
   // Draw static start background
   drawBackground();
 
-  // Initial leaderboard render
-  if (window.replayRenderLeaderboard) {
-    window.replayRenderLeaderboard('gameLbBody', 10);
+  // Initial leaderboard load (real data from Supabase, or static fallback)
+  if (window.replayLoadLeaderboard) {
+    window.replayLoadLeaderboard('gameLbBody', 10);
   }
 
   /* ============================================
