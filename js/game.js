@@ -192,6 +192,17 @@
     return window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
   }
 
+  // On mobile, skip shadowBlur — it's the #1 canvas perf killer on phones
+  var lowPerf = isMobile();
+
+  function glow(color, blur) {
+    if (lowPerf) { ctx.shadowBlur = 0; return; }
+    ctx.shadowColor = color;
+    ctx.shadowBlur  = blur;
+  }
+
+  function noGlow() { ctx.shadowBlur = 0; }
+
   function drawPlayer(p) {
     var x = p.x, y = p.y, w = p.w, h = p.h;
     ctx.save();
@@ -238,8 +249,7 @@
 
     // Screen glow
     ctx.save();
-    ctx.shadowColor = CONFIG.COLOR_BLUE;
-    ctx.shadowBlur  = 12;
+    glow(CONFIG.COLOR_BLUE, 12);
     ctx.strokeStyle = CONFIG.COLOR_BLUE;
     ctx.lineWidth   = 1;
     ctx.beginPath();
@@ -312,8 +322,7 @@
     ctx.translate(ob.x + ob.w / 2 + wx, ob.y + ob.h / 2);
 
     // Shadow/glow
-    ctx.shadowColor = ob.type.color;
-    ctx.shadowBlur  = 10;
+    glow(ob.type.color, 10);
 
     // Body
     ctx.fillStyle   = ob.type.color;
@@ -355,7 +364,7 @@
     }
 
     // Label
-    ctx.shadowBlur = 0;
+    noGlow();
     ctx.fillStyle  = 'rgba(255,255,255,0.85)';
     ctx.font       = Math.max(7, ob.h * 0.18) + "px 'Press Start 2P', monospace";
     ctx.textAlign  = 'center';
@@ -387,8 +396,7 @@
     ctx.translate(q.x, q.y);
 
     // Coin
-    ctx.shadowColor = CONFIG.COLOR_YELLOW;
-    ctx.shadowBlur  = 14;
+    glow(CONFIG.COLOR_YELLOW, 14);
 
     ctx.fillStyle   = CONFIG.COLOR_YELLOW;
     ctx.beginPath();
@@ -429,13 +437,12 @@
 
   function drawResetItem(item) {
     item.pulse += 0.08;
-    var glow = 14 + Math.sin(item.pulse) * 8;
+    var glowAmt = 14 + Math.sin(item.pulse) * 8;
     ctx.save();
     ctx.translate(item.x, item.y);
 
     // Outer ring
-    ctx.shadowColor = CONFIG.COLOR_GREEN;
-    ctx.shadowBlur  = glow;
+    glow(CONFIG.COLOR_GREEN, glowAmt);
     ctx.strokeStyle = CONFIG.COLOR_GREEN;
     ctx.lineWidth   = 2;
     ctx.beginPath();
@@ -497,9 +504,8 @@
       var p = state.particles[i];
       ctx.save();
       ctx.globalAlpha = p.life;
-      ctx.fillStyle   = p.color;
-      ctx.shadowColor = p.color;
-      ctx.shadowBlur  = 4;
+      ctx.fillStyle = p.color;
+      glow(p.color, 4);
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
@@ -538,8 +544,7 @@
       ctx.font        = "bold 10px 'Press Start 2P', monospace";
       ctx.textAlign   = 'center';
       ctx.textBaseline = 'middle';
-      ctx.shadowColor = sp.color;
-      ctx.shadowBlur  = 6;
+      glow(sp.color, 6);
       ctx.fillText(sp.text, sp.x, sp.y);
       ctx.restore();
     }
@@ -586,12 +591,11 @@
     gGrad.addColorStop(1,   'transparent');
     ctx.strokeStyle = gGrad;
     ctx.lineWidth   = 1;
-    ctx.shadowColor = CONFIG.COLOR_BLUE;
-    ctx.shadowBlur  = 6;
+    glow(CONFIG.COLOR_BLUE, 6);
     ctx.beginPath();
     ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY);
     ctx.stroke();
-    ctx.shadowBlur = 0;
+    noGlow();
   }
 
   /* ============================================
@@ -626,10 +630,9 @@
       var scale = 1 + Math.max(0, 60 - state.comboTimer) * 0.003;
       ctx.save();
       ctx.globalAlpha = alpha;
-      ctx.fillStyle   = CONFIG.COLOR_YELLOW;
-      ctx.shadowColor = CONFIG.COLOR_YELLOW;
-      ctx.shadowBlur  = 10;
-      ctx.font        = Math.floor(canvas.width * 0.04 * scale) + "px 'Press Start 2P', monospace";
+      ctx.fillStyle = CONFIG.COLOR_YELLOW;
+      glow(CONFIG.COLOR_YELLOW, 10);
+      ctx.font      = Math.floor(canvas.width * 0.04 * scale) + "px 'Press Start 2P', monospace";
       ctx.textAlign   = 'center';
       ctx.textBaseline = 'top';
       ctx.fillText('x' + state.comboCount + ' COMBO!', canvas.width / 2, 12);
@@ -671,22 +674,21 @@
     ctx.fillStyle   = 'rgba(0,0,0,0.75)';
     ctx.strokeStyle = CONFIG.COLOR_PINK;
     ctx.lineWidth   = 2;
-    ctx.shadowColor = CONFIG.COLOR_PINK;
-    ctx.shadowBlur  = 20;
+    glow(CONFIG.COLOR_PINK, 20);
     ctx.beginPath();
     ctx.roundRect(-pw / 2, -ph / 2, pw, ph, 8);
     ctx.fill();
     ctx.stroke();
 
     // Text
-    ctx.shadowBlur  = 12;
+    glow(CONFIG.COLOR_PINK, 12);
     ctx.fillStyle   = CONFIG.COLOR_PINK;
     ctx.textAlign   = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, 0, 0);
 
     // Speed level indicator dots
-    ctx.shadowBlur = 6;
+    glow(CONFIG.COLOR_PINK, 6);
     for (var d = 0; d < Math.min(state.speedLevel, 10); d++) {
       var dotX = (d - Math.min(state.speedLevel, 10) / 2 + 0.5) * 14;
       ctx.fillStyle = d < state.speedLevel ? CONFIG.COLOR_PINK : CONFIG.COLOR_MUTED;
@@ -720,9 +722,8 @@
     ctx.font        = Math.floor(canvas.width * 0.045) + "px 'Press Start 2P', monospace";
     ctx.textAlign   = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle   = CONFIG.COLOR_YELLOW;
-    ctx.shadowColor = CONFIG.COLOR_YELLOW;
-    ctx.shadowBlur  = 18;
+    ctx.fillStyle = CONFIG.COLOR_YELLOW;
+    glow(CONFIG.COLOR_YELLOW, 18);
     ctx.fillText('★ ' + state.milestoneText + ' ★', cx, cy);
 
     ctx.restore();
