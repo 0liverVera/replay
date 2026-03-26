@@ -97,13 +97,20 @@
     comboTimer:   0,
     shakeTimer:   0,
     shakeIntensity: 0,
-    speedUpTimer:   0,        // frames to show "SPEED UP!" alert
-    speedLevel:     0,        // how many times speed has ramped
-    milestoneTimer: 0,        // frames to show milestone text
+    speedUpTimer:   0,
+    speedLevel:     0,
+    milestoneTimer: 0,
     milestoneText:  '',
-    deathAnimating: false,    // true while death explosion plays
-    deathFrame:     0,        // frame counter for death animation
-    isNewRecord:    false,    // set at game over
+    deathAnimating: false,
+    deathFrame:     0,
+    isNewRecord:    false,
+
+    // Delta-time tracking
+    lastTime:       0,        // last RAF timestamp
+    spawnAccum:     0,        // obstacle spawn accumulator
+    quarterAccum:   0,        // quarter spawn accumulator
+    speedAccum:     0,        // speed ramp accumulator
+    spawnRampAccum: 0,        // spawn-rate ramp accumulator
   };
 
   /* ============================================
@@ -474,13 +481,13 @@
     }
   }
 
-  function updateParticles() {
+  function updateParticles(dt) {
     for (var i = state.particles.length - 1; i >= 0; i--) {
       var p = state.particles[i];
-      p.x   += p.vx;
-      p.y   += p.vy;
-      p.vy  += 0.15; // gravity
-      p.life -= p.decay;
+      p.x    += p.vx * dt;
+      p.y    += p.vy * dt;
+      p.vy   += 0.15 * dt; // gravity
+      p.life -= p.decay * dt;
       if (p.life <= 0) state.particles.splice(i, 1);
     }
   }
@@ -513,11 +520,11 @@
     });
   }
 
-  function updateScorePopups() {
+  function updateScorePopups(dt) {
     for (var i = state.scorePopups.length - 1; i >= 0; i--) {
       var sp = state.scorePopups[i];
-      sp.y -= 1.5;
-      sp.life -= sp.decay;
+      sp.y    -= 1.5 * dt;
+      sp.life -= sp.decay * dt;
       if (sp.life <= 0) state.scorePopups.splice(i, 1);
     }
   }
@@ -592,10 +599,9 @@
      ============================================ */
   function drawScreenFlash() {
     if (state.flashTimer <= 0) return;
-    var alpha = state.flashTimer / 20 * 0.35;
+    var alpha = (state.flashTimer / 20) * 0.35;
     ctx.fillStyle = 'rgba(0, 255, 65, ' + alpha + ')';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    state.flashTimer--;
   }
 
   /* ============================================
@@ -615,10 +621,9 @@
      SCORE / COMBO TEXT
      ============================================ */
   function drawHUD() {
-    // Combo display
     if (state.comboCount > 1 && state.comboTimer > 0) {
       var alpha = Math.min(1, state.comboTimer / 40);
-      var scale = 1 + (60 - state.comboTimer) * 0.003;
+      var scale = 1 + Math.max(0, 60 - state.comboTimer) * 0.003;
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.fillStyle   = CONFIG.COLOR_YELLOW;
@@ -630,11 +635,6 @@
       ctx.fillText('x' + state.comboCount + ' COMBO!', canvas.width / 2, 12);
       ctx.restore();
     }
-    if (state.comboTimer > 0) state.comboTimer--;
-    // Reset combo when timer runs out
-    if (state.comboTimer === 0 && state.comboCount > 0) {
-      state.comboCount = 0;
-    }
   }
 
   /* ============================================
@@ -644,7 +644,6 @@
     if (state.speedUpTimer <= 0) return;
 
     var t = state.speedUpTimer;
-    state.speedUpTimer--;
 
     // Fade in fast, hold, fade out
     var alpha;
@@ -706,7 +705,6 @@
     if (state.milestoneTimer <= 0) return;
 
     var t = state.milestoneTimer;
-    state.milestoneTimer--;
 
     var alpha;
     if (t > 100)      alpha = (120 - t) / 20;
@@ -758,42 +756,49 @@
      ============================================ */
   var raf = null;
 
-  function gameLoop() {
+  function gameLoop(timestamp) {
     if (!state.running) return;
 
-    state.frame++;
+    // ---- Delta time (normalized: 1.0 = one 60fps frame) ----
+    // Clamp to max 2.5x to prevent huge jumps after tab switch / pause
+    var dt = state.lastTime === 0 ? 1 : clamp((timestamp - state.lastTime) / 16.667, 0.1, 2.5);
+    state.lastTime = timestamp;
 
-    // ---- Input / Player movement (smooth acceleration) ----
+    state.frame += dt;
+
+    // ---- Input / Player movement (smooth acceleration, scaled by dt) ----
     var p = state.player;
     var wantLeft  = state.keys.left  || state.touch.left;
     var wantRight = state.keys.right || state.touch.right;
 
     if (wantLeft && !wantRight) {
-      p.vx -= CONFIG.PLAYER_ACCEL;
+      p.vx -= CONFIG.PLAYER_ACCEL * dt;
       if (p.vx < -p.maxSpeed) p.vx = -p.maxSpeed;
     } else if (wantRight && !wantLeft) {
-      p.vx += CONFIG.PLAYER_ACCEL;
+      p.vx += CONFIG.PLAYER_ACCEL * dt;
       if (p.vx > p.maxSpeed) p.vx = p.maxSpeed;
     } else {
-      // Decelerate
-      p.vx *= CONFIG.PLAYER_DECEL;
+      p.vx *= Math.pow(CONFIG.PLAYER_DECEL, dt);
       if (Math.abs(p.vx) < 0.1) p.vx = 0;
     }
 
-    p.x += p.vx;
+    p.x += p.vx * dt;
 
     // Clamp to canvas bounds
     if (p.x < 0) { p.x = 0; p.vx = 0; }
     if (p.x + p.w > canvas.width) { p.x = canvas.width - p.w; p.vx = 0; }
 
-    if (p.invincible > 0) p.invincible--;
+    if (p.invincible > 0) p.invincible -= dt;
 
     // ---- Score ----
-    state.score += CONFIG.SCORE_PER_FRAME;
+    var prevScore = Math.floor(state.score);
+    state.score += CONFIG.SCORE_PER_FRAME * dt;
     updateScoreDisplays();
 
-    // ---- Speed ramp ----
-    if (state.frame > 0 && state.frame % CONFIG.SPEED_RAMP_INTERVAL === 0) {
+    // ---- Speed ramp (accumulator-based, frame-rate independent) ----
+    state.speedAccum += dt;
+    if (state.speedAccum >= CONFIG.SPEED_RAMP_INTERVAL) {
+      state.speedAccum -= CONFIG.SPEED_RAMP_INTERVAL;
       var newSpeed = Math.min(state.speed + CONFIG.SPEED_RAMP_AMOUNT, CONFIG.OBSTACLE_SPEED_MAX);
       if (newSpeed !== state.speed) {
         state.speed = newSpeed;
@@ -803,7 +808,9 @@
     }
 
     // ---- Spawn rate ramp ----
-    if (state.frame > 0 && state.frame % CONFIG.SPAWN_RAMP_INTERVAL === 0) {
+    state.spawnRampAccum += dt;
+    if (state.spawnRampAccum >= CONFIG.SPAWN_RAMP_INTERVAL) {
+      state.spawnRampAccum -= CONFIG.SPAWN_RAMP_INTERVAL;
       state.spawnRate = Math.max(state.spawnRate - CONFIG.SPAWN_RAMP_AMOUNT, CONFIG.OBSTACLE_SPAWN_MIN);
     }
 
@@ -811,32 +818,42 @@
     var milestones = [500, 1000, 2500, 5000, 10000];
     for (var mi = 0; mi < milestones.length; mi++) {
       var ms = milestones[mi];
-      // Trigger once when score crosses threshold (within a 2-frame window)
-      if (state.score >= ms && state.score - CONFIG.SCORE_PER_FRAME < ms) {
+      if (prevScore < ms && Math.floor(state.score) >= ms) {
         state.milestoneText = ms.toLocaleString() + ' PTS!';
         state.milestoneTimer = 120;
       }
     }
 
-    // ---- Spawn obstacles ----
-    if (state.frame % Math.floor(state.spawnRate) === 0) {
+    // ---- Spawn obstacles (accumulator) ----
+    state.spawnAccum += dt;
+    if (state.spawnAccum >= state.spawnRate) {
+      state.spawnAccum -= state.spawnRate;
       state.obstacles.push(spawnObstacle());
     }
 
-    // ---- Spawn quarters ----
-    if (state.frame % CONFIG.QUARTER_SPAWN_RATE === 0) {
+    // ---- Spawn quarters (accumulator) ----
+    state.quarterAccum += dt;
+    if (state.quarterAccum >= CONFIG.QUARTER_SPAWN_RATE) {
+      state.quarterAccum -= CONFIG.QUARTER_SPAWN_RATE;
       state.quarters.push(spawnQuarter());
     }
 
-    // ---- Spawn RESET (random chance) ----
-    if (Math.random() < CONFIG.RESET_SPAWN_CHANCE) {
+    // ---- Spawn RESET (random chance, scaled by dt) ----
+    if (Math.random() < CONFIG.RESET_SPAWN_CHANCE * dt) {
       state.resetItems.push(spawnResetItem());
     }
+
+    // ---- Timers (all scaled by dt) ----
+    if (state.comboTimer > 0)   { state.comboTimer   -= dt; if (state.comboTimer <= 0) { state.comboTimer = 0; state.comboCount = 0; } }
+    if (state.speedUpTimer > 0)   state.speedUpTimer  -= dt;
+    if (state.milestoneTimer > 0) state.milestoneTimer -= dt;
+    if (state.flashTimer > 0)     state.flashTimer     -= dt;
+    if (state.shakeTimer > 0)   { state.shakeTimer    -= dt; state.shakeIntensity *= Math.pow(0.9, dt); }
 
     // ---- Update obstacles ----
     for (var i = state.obstacles.length - 1; i >= 0; i--) {
       var ob = state.obstacles[i];
-      ob.y += ob.speed;
+      ob.y += ob.speed * dt;
 
       // Off screen
       if (ob.y > canvas.height + 10) {
@@ -845,7 +862,7 @@
       }
 
       // Collision with player
-      if (p.invincible === 0 && rectsOverlap(p.x, p.y, p.w, p.h, ob.x, ob.y, ob.w, ob.h)) {
+      if (p.invincible <= 0 && rectsOverlap(p.x, p.y, p.w, p.h, ob.x, ob.y, ob.w, ob.h)) {
         spawnParticles(p.x + p.w / 2, p.y + p.h / 2, CONFIG.COLOR_PINK, 30);
         state.shakeTimer = 12;
         state.shakeIntensity = 10;
@@ -857,11 +874,10 @@
     // ---- Update quarters ----
     for (var j = state.quarters.length - 1; j >= 0; j--) {
       var q = state.quarters[j];
-      q.y += q.speed;
+      q.y += q.speed * dt;
 
       if (q.y > canvas.height + 10) {
         state.quarters.splice(j, 1);
-        // Missed a quarter = combo broken
         state.comboCount = 0;
         state.comboTimer = 0;
         continue;
@@ -872,8 +888,7 @@
         state.quarters.splice(j, 1);
         var bonus = CONFIG.QUARTER_POINTS;
         state.comboCount++;
-        state.comboTimer = 90; // more forgiving combo window
-        // Combo multiplier
+        state.comboTimer = 90;
         if (state.comboCount > 1) {
           bonus = Math.floor(bonus * (1 + state.comboCount * 0.25));
         }
@@ -887,7 +902,7 @@
     // ---- Update RESET items ----
     for (var k = state.resetItems.length - 1; k >= 0; k--) {
       var ri = state.resetItems[k];
-      ri.y += ri.speed;
+      ri.y += ri.speed * dt;
 
       if (ri.y > canvas.height + 10) {
         state.resetItems.splice(k, 1);
@@ -915,8 +930,8 @@
     }
 
     // ---- Update particles & popups ----
-    updateParticles();
-    updateScorePopups();
+    updateParticles(dt);
+    updateScorePopups(dt);
 
     // ---- DRAW ----
     ctx.save();
@@ -976,6 +991,11 @@
     state.deathAnimating = false;
     state.deathFrame     = 0;
     state.isNewRecord    = false;
+    state.lastTime       = 0;
+    state.spawnAccum     = 0;
+    state.quarterAccum   = 0;
+    state.speedAccum     = 0;
+    state.spawnRampAccum = 0;
     state.player         = createPlayer();
     updateScoreDisplays();
   }
