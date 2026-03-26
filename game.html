@@ -22,13 +22,34 @@
   <!-- Navigation -->
   <nav class="nav nav-game" id="nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-back">← BACK</a>
+      <a href="index.html" class="nav-back">&larr; BACK</a>
       <a href="index.html" class="nav-logo">$REPLAY</a>
       <div class="nav-right">
-        <button class="btn-wallet" id="walletBtn">CONNECT WALLET</button>
+        <div class="wallet-area" id="walletArea">
+          <button class="btn-wallet" id="walletBtn">LOG IN</button>
+          <button class="btn-logout hidden" id="logoutBtn" title="Log out">LOG OUT</button>
+        </div>
       </div>
     </div>
   </nav>
+
+  <!-- Wallet Modal -->
+  <div class="wallet-modal-backdrop hidden" id="walletModal">
+    <div class="wallet-modal">
+      <button class="wallet-modal-close" id="walletModalClose" aria-label="Close">&times;</button>
+      <h2 class="wallet-modal-title">ENTER YOUR SOLANA WALLET</h2>
+      <input
+        type="text"
+        class="wallet-modal-input"
+        id="walletInput"
+        placeholder="Paste your Solana wallet address..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="wallet-modal-error hidden" id="walletError">Invalid wallet address</div>
+      <button class="btn-primary wallet-modal-confirm" id="walletConfirm">CONFIRM</button>
+    </div>
+  </div>
 
   <!-- Game Container -->
   <main class="game-page">
@@ -38,14 +59,21 @@
       <div class="game-bezel">
         <div class="bezel-top">
           <span class="bezel-title">$REPLAY ARCADE</span>
-          <div class="score-display">
-            <span class="score-label">SCORE</span>
-            <span class="score-value" id="scoreDisplay">00000</span>
+          <div class="bezel-scores">
+            <div class="score-display">
+              <span class="score-label">SCORE</span>
+              <span class="score-value" id="scoreDisplay">00000</span>
+            </div>
+            <div class="hiscore-display">
+              <span class="score-label">BEST</span>
+              <span class="score-value" id="hiScoreDisplay">00000</span>
+            </div>
           </div>
-          <div class="hiscore-display">
-            <span class="score-label">BEST</span>
-            <span class="score-value" id="hiScoreDisplay">00000</span>
-          </div>
+        </div>
+
+        <!-- Player ID bar (shows wallet if logged in) -->
+        <div class="player-bar" id="playerBar">
+          <span class="player-bar-text" id="playerBarText">GUEST</span>
         </div>
 
         <!-- Game Canvas Area -->
@@ -60,8 +88,9 @@
               <div class="overlay-insert blink-text">INSERT COIN</div>
               <div class="overlay-hint">CLICK / TAP TO BEGIN</div>
               <div class="overlay-controls">
-                <div class="control-hint">← → or A / D to move</div>
-                <div class="control-hint">Mobile: tap left/right side</div>
+                <div class="control-hint">&larr; &rarr; or A / D to move</div>
+                <div class="control-hint">Collect quarters. Dodge suits.</div>
+                <div class="control-hint mobile-hint">Mobile: tap left/right side</div>
               </div>
             </div>
           </div>
@@ -75,12 +104,16 @@
                 <div class="overlay-final-score" id="finalScore">00000</div>
               </div>
               <div class="overlay-score-block" id="newRecordBlock" style="display:none">
-                <div class="new-record blink-text">★ NEW HIGH SCORE ★</div>
+                <div class="new-record blink-text">&#9733; NEW HIGH SCORE &#9733;</div>
               </div>
               <button class="btn-primary btn-pulse overlay-btn" id="restartBtn">PRESS START TO REPLAY</button>
-              <a href="index.html" class="overlay-home-link">← BACK TO HOME</a>
+              <a href="index.html" class="overlay-home-link">&larr; BACK TO HOME</a>
             </div>
           </div>
+
+          <!-- Touch zones INSIDE the canvas container for mobile -->
+          <div class="touch-zone touch-left" id="touchLeft" aria-hidden="true"></div>
+          <div class="touch-zone touch-right" id="touchRight" aria-hidden="true"></div>
         </div>
 
         <!-- Bezel Bottom -->
@@ -94,10 +127,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Mobile Touch Zones (invisible, full canvas height) -->
-      <div class="touch-zone touch-left" id="touchLeft" aria-hidden="true"></div>
-      <div class="touch-zone touch-right" id="touchRight" aria-hidden="true"></div>
 
     </div>
   </main>

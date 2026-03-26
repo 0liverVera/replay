@@ -26,10 +26,31 @@
         <a href="game.html" class="nav-link">PLAY</a>
         <a href="#tokenomics" class="nav-link">SPECS</a>
         <a href="#community" class="nav-link">COMMUNITY</a>
-        <button class="btn-wallet" id="walletBtn">CONNECT WALLET</button>
+        <div class="wallet-area" id="walletArea">
+          <button class="btn-wallet" id="walletBtn">LOG IN</button>
+          <button class="btn-logout hidden" id="logoutBtn" title="Log out">LOG OUT</button>
+        </div>
       </div>
     </div>
   </nav>
+
+  <!-- Wallet Modal -->
+  <div class="wallet-modal-backdrop hidden" id="walletModal">
+    <div class="wallet-modal">
+      <button class="wallet-modal-close" id="walletModalClose" aria-label="Close">&times;</button>
+      <h2 class="wallet-modal-title">ENTER YOUR SOLANA WALLET</h2>
+      <input
+        type="text"
+        class="wallet-modal-input"
+        id="walletInput"
+        placeholder="Paste your Solana wallet address..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="wallet-modal-error hidden" id="walletError">Invalid wallet address</div>
+      <button class="btn-primary wallet-modal-confirm" id="walletConfirm">CONFIRM</button>
+    </div>
+  </div>
 
   <!-- Hero Section -->
   <section class="hero" id="hero">
@@ -44,18 +65,18 @@
         <a href="game.html" class="btn-primary btn-pulse">PRESS START</a>
       </div>
       <div class="hero-links">
-        <a href="#" class="btn-social">TWITTER</a>
-        <a href="#" class="btn-social">TELEGRAM</a>
-        <a href="#" class="btn-social">BUY ON BONKFUN</a>
+        <a href="#" class="btn-social" target="_blank" rel="noopener noreferrer">TWITTER</a>
+        <a href="#" class="btn-social" target="_blank" rel="noopener noreferrer">TELEGRAM</a>
+        <a href="#" class="btn-social" target="_blank" rel="noopener noreferrer">BUY ON BONKFUN</a>
       </div>
     </div>
     <!-- Floating pixel decorations -->
     <div class="hero-floats" aria-hidden="true">
-      <span class="float-pixel fp1">■</span>
-      <span class="float-pixel fp2">▲</span>
-      <span class="float-pixel fp3">●</span>
-      <span class="float-pixel fp4">■</span>
-      <span class="float-pixel fp5">▲</span>
+      <span class="float-pixel fp1">&#9632;</span>
+      <span class="float-pixel fp2">&#9650;</span>
+      <span class="float-pixel fp3">&#9679;</span>
+      <span class="float-pixel fp4">&#9632;</span>
+      <span class="float-pixel fp5">&#9650;</span>
     </div>
   </section>
 
@@ -142,7 +163,7 @@
         </div>
         <div class="spec-card">
           <div class="spec-label">LP</div>
-          <div class="spec-value pink">BURNED 🔥</div>
+          <div class="spec-value pink">BURNED</div>
         </div>
       </div>
     </div>
@@ -155,12 +176,12 @@
       <h2 class="section-title">PLAYER 2 HAS ENTERED</h2>
       <p class="section-desc">This isn't a one-player game. $REPLAY runs because the community runs it.</p>
       <div class="community-links">
-        <a href="#" class="btn-community">
-          <span class="btn-community-icon">𝕏</span>
+        <a href="#" class="btn-community" target="_blank" rel="noopener noreferrer">
+          <span class="btn-community-icon">&#120143;</span>
           TWITTER
         </a>
-        <a href="#" class="btn-community">
-          <span class="btn-community-icon">✈</span>
+        <a href="#" class="btn-community" target="_blank" rel="noopener noreferrer">
+          <span class="btn-community-icon">&#9992;</span>
           TELEGRAM
         </a>
       </div>
@@ -174,11 +195,11 @@
         <div class="footer-logo">$REPLAY</div>
         <p class="footer-tagline">Still running since 2026</p>
         <div class="footer-links">
-          <a href="#" class="footer-link">Twitter</a>
+          <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">Twitter</a>
           <span class="footer-sep">|</span>
-          <a href="#" class="footer-link">Telegram</a>
+          <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">Telegram</a>
           <span class="footer-sep">|</span>
-          <a href="#" class="footer-link">BONKfun</a>
+          <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">BONKfun</a>
         </div>
         <p class="footer-disclaimer">$REPLAY is a memecoin on Solana for entertainment purposes. Not financial advice. Do your own research.</p>
       </div>

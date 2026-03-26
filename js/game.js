@@ -10,40 +10,42 @@
   /* ============================================
      CONSTANTS & CONFIG
      ============================================ */
-  const CONFIG = {
+  var CONFIG = {
     // Player
     PLAYER_WIDTH:        52,
     PLAYER_HEIGHT:       70,
-    PLAYER_SPEED:        6,
-    PLAYER_SPEED_MOBILE: 5,
+    PLAYER_SPEED:        6.5,
+    PLAYER_SPEED_MOBILE: 5.5,
+    PLAYER_ACCEL:        0.6,    // acceleration for smoother movement
+    PLAYER_DECEL:        0.75,   // deceleration multiplier (friction)
 
     // Obstacles
     OBSTACLE_WIDTH_MIN:  40,
     OBSTACLE_WIDTH_MAX:  80,
     OBSTACLE_HEIGHT_MIN: 35,
     OBSTACLE_HEIGHT_MAX: 55,
-    OBSTACLE_SPEED_BASE: 3.5,
-    OBSTACLE_SPEED_MAX:  11,
-    OBSTACLE_SPAWN_RATE: 90,   // frames between spawns (decreases over time)
-    OBSTACLE_SPAWN_MIN:  30,
+    OBSTACLE_SPEED_BASE: 1.2,   // start very slow
+    OBSTACLE_SPEED_MAX:  14,    // max speed — fast but readable
+    OBSTACLE_SPAWN_RATE: 160,   // start sparse
+    OBSTACLE_SPAWN_MIN:  28,    // end dense but not overwhelming
 
     // Quarters (collectibles)
     QUARTER_RADIUS:   10,
-    QUARTER_SPEED:    2.5,
-    QUARTER_SPAWN_RATE: 150,
+    QUARTER_SPEED:    1.0,      // slow at start, scales with game speed
+    QUARTER_SPAWN_RATE: 180,
     QUARTER_POINTS:   50,
 
     // RESET power-up
     RESET_RADIUS:       14,
-    RESET_SPEED:        2,
-    RESET_SPAWN_CHANCE: 0.004,  // per-frame probability
+    RESET_SPEED:        1.0,
+    RESET_SPAWN_CHANCE: 0.003,
 
     // Scoring
     SCORE_PER_FRAME:    1,
-    SPEED_RAMP_INTERVAL: 600,   // frames between speed increases
-    SPEED_RAMP_AMOUNT:   0.4,
-    SPAWN_RAMP_INTERVAL: 800,   // frames between spawn rate decrease
-    SPAWN_RAMP_AMOUNT:   5,
+    SPEED_RAMP_INTERVAL: 700,   // ramp every ~12s — slow build
+    SPEED_RAMP_AMOUNT:   0.5,   // modest jumps
+    SPAWN_RAMP_INTERVAL: 900,
+    SPAWN_RAMP_AMOUNT:   6,     // gradual density increase
 
     // Colors
     COLOR_BG:       '#000000',
@@ -63,7 +65,7 @@
   /* ============================================
      OBSTACLE TYPES
      ============================================ */
-  const OBSTACLE_TYPES = [
+  var OBSTACLE_TYPES = [
     { label: 'VC',        color: '#cc3333', accent: '#ff4444' },
     { label: 'INSIDER',   color: '#882200', accent: '#cc3300' },
     { label: 'KOL',       color: '#993366', accent: '#cc4488' },
@@ -74,7 +76,7 @@
   /* ============================================
      GAME STATE
      ============================================ */
-  let state = {
+  var state = {
     running:      false,
     started:      false,
     score:        0,
@@ -86,29 +88,39 @@
     quarters:     [],
     resetItems:   [],
     particles:    [],
+    scorePopups:  [],
     player:       null,
     keys:         { left: false, right: false },
     touch:        { left: false, right: false },
-    flashTimer:   0,          // RESET power-up screen flash
+    flashTimer:   0,
     comboCount:   0,
     comboTimer:   0,
+    shakeTimer:   0,
+    shakeIntensity: 0,
+    speedUpTimer:   0,        // frames to show "SPEED UP!" alert
+    speedLevel:     0,        // how many times speed has ramped
+    milestoneTimer: 0,        // frames to show milestone text
+    milestoneText:  '',
+    deathAnimating: false,    // true while death explosion plays
+    deathFrame:     0,        // frame counter for death animation
+    isNewRecord:    false,    // set at game over
   };
 
   /* ============================================
      DOM REFS
      ============================================ */
-  const canvas         = document.getElementById('gameCanvas');
-  const ctx            = canvas ? canvas.getContext('2d') : null;
-  const canvasContainer = document.getElementById('canvasContainer');
-  const startScreen    = document.getElementById('startScreen');
-  const gameOverScreen = document.getElementById('gameOverScreen');
-  const scoreDisplay   = document.getElementById('scoreDisplay');
-  const hiScoreDisplay = document.getElementById('hiScoreDisplay');
-  const finalScore     = document.getElementById('finalScore');
-  const newRecordBlock = document.getElementById('newRecordBlock');
-  const restartBtn     = document.getElementById('restartBtn');
-  const touchLeft      = document.getElementById('touchLeft');
-  const touchRight     = document.getElementById('touchRight');
+  var canvas          = document.getElementById('gameCanvas');
+  var ctx             = canvas ? canvas.getContext('2d') : null;
+  var canvasContainer = document.getElementById('canvasContainer');
+  var startScreen     = document.getElementById('startScreen');
+  var gameOverScreen  = document.getElementById('gameOverScreen');
+  var scoreDisplay    = document.getElementById('scoreDisplay');
+  var hiScoreDisplay  = document.getElementById('hiScoreDisplay');
+  var finalScore      = document.getElementById('finalScore');
+  var newRecordBlock  = document.getElementById('newRecordBlock');
+  var restartBtn      = document.getElementById('restartBtn');
+  var touchLeft       = document.getElementById('touchLeft');
+  var touchRight      = document.getElementById('touchRight');
 
   if (!canvas || !ctx) return; // Guard: not on game page
 
@@ -118,9 +130,13 @@
      ============================================ */
   function resizeCanvas() {
     if (!canvasContainer) return;
-    const rect = canvasContainer.getBoundingClientRect();
-    canvas.width  = rect.width  || CONFIG.CANVAS_BASE_WIDTH;
-    canvas.height = rect.height || CONFIG.CANVAS_BASE_HEIGHT;
+    var rect = canvasContainer.getBoundingClientRect();
+    var w = Math.floor(rect.width)  || CONFIG.CANVAS_BASE_WIDTH;
+    var h = Math.floor(rect.height) || CONFIG.CANVAS_BASE_HEIGHT;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
   }
 
   window.addEventListener('resize', resizeCanvas, { passive: true });
@@ -130,7 +146,7 @@
      HI-SCORE — localStorage
      ============================================ */
   function loadHiScore() {
-    const stored = localStorage.getItem('replay_hiscore');
+    var stored = localStorage.getItem('replay_hiscore');
     state.hiScore = stored ? parseInt(stored, 10) : 0;
     updateScoreDisplays();
   }
@@ -138,7 +154,7 @@
   function saveHiScore(score) {
     if (score > state.hiScore) {
       state.hiScore = score;
-      localStorage.setItem('replay_hiscore', score);
+      localStorage.setItem('replay_hiscore', String(score));
       return true; // new record
     }
     return false;
@@ -159,7 +175,8 @@
       y:      canvas.height - CONFIG.PLAYER_HEIGHT - 24,
       w:      CONFIG.PLAYER_WIDTH,
       h:      CONFIG.PLAYER_HEIGHT,
-      speed:  isMobile() ? CONFIG.PLAYER_SPEED_MOBILE : CONFIG.PLAYER_SPEED,
+      maxSpeed: isMobile() ? CONFIG.PLAYER_SPEED_MOBILE : CONFIG.PLAYER_SPEED,
+      vx:     0,
       invincible: 0, // frames of invincibility after RESET
     };
   }
@@ -169,13 +186,19 @@
   }
 
   function drawPlayer(p) {
-    const x = p.x, y = p.y, w = p.w, h = p.h;
+    var x = p.x, y = p.y, w = p.w, h = p.h;
     ctx.save();
 
     // Invincibility flash
     if (p.invincible > 0 && Math.floor(p.invincible / 4) % 2 === 0) {
       ctx.globalAlpha = 0.4;
     }
+
+    // Slight tilt based on velocity for game feel
+    var tilt = p.vx * 0.015;
+    ctx.translate(x + w / 2, y + h / 2);
+    ctx.rotate(tilt);
+    ctx.translate(-(x + w / 2), -(y + h / 2));
 
     // Cabinet body
     ctx.fillStyle = '#1a1a2e';
@@ -195,11 +218,11 @@
     ctx.stroke();
 
     // Screen (glowing)
-    const screenPad = 7;
-    const screenX = x + screenPad;
-    const screenY = y + 14;
-    const screenW = w - screenPad * 2;
-    const screenH = h * 0.42;
+    var screenPad = 7;
+    var screenX = x + screenPad;
+    var screenY = y + 14;
+    var screenW = w - screenPad * 2;
+    var screenH = h * 0.42;
 
     ctx.fillStyle = '#000';
     ctx.beginPath();
@@ -219,7 +242,7 @@
 
     // "$R" on screen
     ctx.fillStyle  = CONFIG.COLOR_BLUE;
-    ctx.font       = `bold ${Math.floor(screenH * 0.45)}px 'Press Start 2P', monospace`;
+    ctx.font       = 'bold ' + Math.floor(screenH * 0.45) + "px 'Press Start 2P', monospace";
     ctx.textAlign  = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('$R', screenX + screenW / 2, screenY + screenH / 2);
@@ -234,7 +257,7 @@
     // Side panel lines (detail)
     ctx.strokeStyle = '#2a2a4a';
     ctx.lineWidth = 1;
-    for (let i = 0; i < 3; i++) {
+    for (var i = 0; i < 3; i++) {
       ctx.beginPath();
       ctx.moveTo(x + 3, y + h * 0.62 + i * 6);
       ctx.lineTo(x + 8, y + h * 0.62 + i * 6);
@@ -258,16 +281,17 @@
      Geometric shapes with labels
      ============================================ */
   function spawnObstacle() {
-    const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
-    const w = rand(CONFIG.OBSTACLE_WIDTH_MIN, CONFIG.OBSTACLE_WIDTH_MAX);
-    const h = rand(CONFIG.OBSTACLE_HEIGHT_MIN, CONFIG.OBSTACLE_HEIGHT_MAX);
-    const x = rand(10, canvas.width - w - 10);
+    var type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+    var w = rand(CONFIG.OBSTACLE_WIDTH_MIN, CONFIG.OBSTACLE_WIDTH_MAX);
+    var h = rand(CONFIG.OBSTACLE_HEIGHT_MIN, CONFIG.OBSTACLE_HEIGHT_MAX);
+    var x = rand(10, canvas.width - w - 10);
     return {
-      x, y: -h - 10,
-      w, h,
-      type,
+      x: x, y: -h - 10,
+      w: w, h: h,
+      type: type,
       speed: state.speed + rand(-0.5, 0.8),
-      wobble: Math.random() * Math.PI * 2,  // wobble phase
+      wobble: Math.random() * Math.PI * 2,
+      rotation: 0,
     };
   }
 
@@ -276,7 +300,7 @@
 
     // Slight wobble
     ob.wobble += 0.04;
-    const wx = Math.sin(ob.wobble) * 1.5;
+    var wx = Math.sin(ob.wobble) * 1.5;
 
     ctx.translate(ob.x + ob.w / 2 + wx, ob.y + ob.h / 2);
 
@@ -326,7 +350,7 @@
     // Label
     ctx.shadowBlur = 0;
     ctx.fillStyle  = 'rgba(255,255,255,0.85)';
-    ctx.font       = `${Math.max(7, ob.h * 0.18)}px 'Press Start 2P', monospace`;
+    ctx.font       = Math.max(7, ob.h * 0.18) + "px 'Press Start 2P', monospace";
     ctx.textAlign  = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(ob.type.label, 0, 0);
@@ -338,12 +362,14 @@
      QUARTERS (collectibles)
      ============================================ */
   function spawnQuarter() {
-    const r = CONFIG.QUARTER_RADIUS;
+    var r = CONFIG.QUARTER_RADIUS;
+    // Quarter speed scales with current game speed so they stay catchable
+    var qs = CONFIG.QUARTER_SPEED + state.speed * 0.35 + Math.random() * 0.5;
     return {
       x: rand(r + 10, canvas.width - r - 10),
       y: -r * 2,
-      r,
-      speed: CONFIG.QUARTER_SPEED + Math.random() * 0.8,
+      r: r,
+      speed: qs,
       spin:  0,
     };
   }
@@ -368,13 +394,13 @@
     ctx.ellipse(0, 0, (q.r - 3) * Math.abs(Math.cos(q.spin)) + 1, q.r - 3, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // ¢ symbol
+    // Symbol
     if (Math.abs(Math.cos(q.spin)) > 0.3) {
       ctx.fillStyle  = CONFIG.COLOR_YELLOW;
-      ctx.font       = `bold ${q.r}px 'Space Grotesk', sans-serif`;
+      ctx.font       = 'bold ' + q.r + "px 'Space Grotesk', sans-serif";
       ctx.textAlign  = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('¢', 0, 1);
+      ctx.fillText('\u00A2', 0, 1);
     }
 
     ctx.restore();
@@ -384,19 +410,19 @@
      RESET POWER-UP
      ============================================ */
   function spawnResetItem() {
-    const r = CONFIG.RESET_RADIUS;
+    var r = CONFIG.RESET_RADIUS;
     return {
       x: rand(r + 10, canvas.width - r - 10),
       y: -r * 2,
-      r,
-      speed: CONFIG.RESET_SPEED,
+      r: r,
+      speed: CONFIG.RESET_SPEED + state.speed * 0.2,
       pulse: 0,
     };
   }
 
   function drawResetItem(item) {
     item.pulse += 0.08;
-    const glow = 14 + Math.sin(item.pulse) * 8;
+    var glow = 14 + Math.sin(item.pulse) * 8;
     ctx.save();
     ctx.translate(item.x, item.y);
 
@@ -421,7 +447,7 @@
 
     // Label
     ctx.fillStyle    = CONFIG.COLOR_GREEN;
-    ctx.font         = `${item.r * 0.55}px 'Press Start 2P', monospace`;
+    ctx.font         = (item.r * 0.55) + "px 'Press Start 2P', monospace";
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('RST', 0, 1);
@@ -433,24 +459,24 @@
      PARTICLES (juice effects)
      ============================================ */
   function spawnParticles(x, y, color, count) {
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = rand(1.5, 5);
+    for (var i = 0; i < count; i++) {
+      var angle = Math.random() * Math.PI * 2;
+      var speed = rand(1.5, 5);
       state.particles.push({
-        x, y,
+        x: x, y: y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - 2,
         life: 1,
         decay: rand(0.02, 0.05),
         r:    rand(2, 5),
-        color,
+        color: color,
       });
     }
   }
 
   function updateParticles() {
-    for (let i = state.particles.length - 1; i >= 0; i--) {
-      const p = state.particles[i];
+    for (var i = state.particles.length - 1; i >= 0; i--) {
+      var p = state.particles[i];
       p.x   += p.vx;
       p.y   += p.vy;
       p.vy  += 0.15; // gravity
@@ -460,7 +486,8 @@
   }
 
   function drawParticles() {
-    state.particles.forEach(p => {
+    for (var i = 0; i < state.particles.length; i++) {
+      var p = state.particles[i];
       ctx.save();
       ctx.globalAlpha = p.life;
       ctx.fillStyle   = p.color;
@@ -470,7 +497,45 @@
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
+    }
+  }
+
+  /* ============================================
+     SCORE POPUPS (floating text)
+     ============================================ */
+  function spawnScorePopup(x, y, text, color) {
+    state.scorePopups.push({
+      x: x, y: y,
+      text: text,
+      color: color,
+      life: 1,
+      decay: 0.025,
     });
+  }
+
+  function updateScorePopups() {
+    for (var i = state.scorePopups.length - 1; i >= 0; i--) {
+      var sp = state.scorePopups[i];
+      sp.y -= 1.5;
+      sp.life -= sp.decay;
+      if (sp.life <= 0) state.scorePopups.splice(i, 1);
+    }
+  }
+
+  function drawScorePopups() {
+    for (var i = 0; i < state.scorePopups.length; i++) {
+      var sp = state.scorePopups[i];
+      ctx.save();
+      ctx.globalAlpha = sp.life;
+      ctx.fillStyle   = sp.color;
+      ctx.font        = "bold 10px 'Press Start 2P', monospace";
+      ctx.textAlign   = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = sp.color;
+      ctx.shadowBlur  = 6;
+      ctx.fillText(sp.text, sp.x, sp.y);
+      ctx.restore();
+    }
   }
 
   /* ============================================
@@ -484,22 +549,35 @@
     // Subtle grid
     ctx.strokeStyle = 'rgba(0, 212, 255, 0.025)';
     ctx.lineWidth   = 1;
-    const gridSize  = 40;
-    for (let x = 0; x < canvas.width; x += gridSize) {
+    var gridSize  = 40;
+    for (var x = 0; x < canvas.width; x += gridSize) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
     }
-    for (let y = 0; y < canvas.height; y += gridSize) {
+    for (var y = 0; y < canvas.height; y += gridSize) {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
     }
 
+    // Side danger lane indicators (very subtle)
+    var grad = ctx.createLinearGradient(0, 0, 20, 0);
+    grad.addColorStop(0, 'rgba(255, 0, 128, 0.04)');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 20, canvas.height);
+
+    var grad2 = ctx.createLinearGradient(canvas.width, 0, canvas.width - 20, 0);
+    grad2.addColorStop(0, 'rgba(255, 0, 128, 0.04)');
+    grad2.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad2;
+    ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
+
     // Ground line
-    const groundY = canvas.height - 20;
-    const grad = ctx.createLinearGradient(0, groundY, canvas.width, groundY);
-    grad.addColorStop(0,   'transparent');
-    grad.addColorStop(0.3, CONFIG.COLOR_BLUE);
-    grad.addColorStop(0.7, CONFIG.COLOR_BLUE);
-    grad.addColorStop(1,   'transparent');
-    ctx.strokeStyle = grad;
+    var groundY = canvas.height - 20;
+    var gGrad = ctx.createLinearGradient(0, groundY, canvas.width, groundY);
+    gGrad.addColorStop(0,   'transparent');
+    gGrad.addColorStop(0.3, CONFIG.COLOR_BLUE);
+    gGrad.addColorStop(0.7, CONFIG.COLOR_BLUE);
+    gGrad.addColorStop(1,   'transparent');
+    ctx.strokeStyle = gGrad;
     ctx.lineWidth   = 1;
     ctx.shadowColor = CONFIG.COLOR_BLUE;
     ctx.shadowBlur  = 6;
@@ -514,10 +592,23 @@
      ============================================ */
   function drawScreenFlash() {
     if (state.flashTimer <= 0) return;
-    const alpha = state.flashTimer / 20 * 0.35;
-    ctx.fillStyle = `rgba(0, 255, 65, ${alpha})`;
+    var alpha = state.flashTimer / 20 * 0.35;
+    ctx.fillStyle = 'rgba(0, 255, 65, ' + alpha + ')';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     state.flashTimer--;
+  }
+
+  /* ============================================
+     SCREEN SHAKE
+     ============================================ */
+  function applyScreenShake() {
+    if (state.shakeTimer > 0) {
+      var sx = (Math.random() - 0.5) * state.shakeIntensity;
+      var sy = (Math.random() - 0.5) * state.shakeIntensity;
+      ctx.translate(sx, sy);
+      state.shakeTimer--;
+      state.shakeIntensity *= 0.9;
+    }
   }
 
   /* ============================================
@@ -526,19 +617,117 @@
   function drawHUD() {
     // Combo display
     if (state.comboCount > 1 && state.comboTimer > 0) {
-      const alpha = Math.min(1, state.comboTimer / 40);
+      var alpha = Math.min(1, state.comboTimer / 40);
+      var scale = 1 + (60 - state.comboTimer) * 0.003;
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.fillStyle   = CONFIG.COLOR_YELLOW;
       ctx.shadowColor = CONFIG.COLOR_YELLOW;
       ctx.shadowBlur  = 10;
-      ctx.font        = `${Math.floor(canvas.width * 0.04)}px 'Press Start 2P', monospace`;
+      ctx.font        = Math.floor(canvas.width * 0.04 * scale) + "px 'Press Start 2P', monospace";
       ctx.textAlign   = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillText(`x${state.comboCount} COMBO!`, canvas.width / 2, 12);
+      ctx.fillText('x' + state.comboCount + ' COMBO!', canvas.width / 2, 12);
       ctx.restore();
     }
     if (state.comboTimer > 0) state.comboTimer--;
+    // Reset combo when timer runs out
+    if (state.comboTimer === 0 && state.comboCount > 0) {
+      state.comboCount = 0;
+    }
+  }
+
+  /* ============================================
+     SPEED UP ALERT
+     ============================================ */
+  function drawSpeedUpAlert() {
+    if (state.speedUpTimer <= 0) return;
+
+    var t = state.speedUpTimer;
+    state.speedUpTimer--;
+
+    // Fade in fast, hold, fade out
+    var alpha;
+    if (t > 80)       alpha = (100 - t) / 20;        // fade in
+    else if (t > 30)  alpha = 1;                      // hold
+    else              alpha = t / 30;                 // fade out
+
+    // Scale: pop in large, settle down
+    var scale = t > 80 ? 0.5 + (100 - t) / 40 : 1.0;
+
+    var cx = canvas.width / 2;
+    var cy = canvas.height / 2;
+
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.95;
+    ctx.translate(cx, cy);
+    ctx.scale(scale, scale);
+
+    // Background pill
+    var label = 'SPEED UP!';
+    ctx.font = Math.floor(canvas.width * 0.055) + "px 'Press Start 2P', monospace";
+    var tw = ctx.measureText(label).width;
+    var pw = tw + 40, ph = 44;
+
+    ctx.fillStyle   = 'rgba(0,0,0,0.75)';
+    ctx.strokeStyle = CONFIG.COLOR_PINK;
+    ctx.lineWidth   = 2;
+    ctx.shadowColor = CONFIG.COLOR_PINK;
+    ctx.shadowBlur  = 20;
+    ctx.beginPath();
+    ctx.roundRect(-pw / 2, -ph / 2, pw, ph, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    // Text
+    ctx.shadowBlur  = 12;
+    ctx.fillStyle   = CONFIG.COLOR_PINK;
+    ctx.textAlign   = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, 0, 0);
+
+    // Speed level indicator dots
+    ctx.shadowBlur = 6;
+    for (var d = 0; d < Math.min(state.speedLevel, 10); d++) {
+      var dotX = (d - Math.min(state.speedLevel, 10) / 2 + 0.5) * 14;
+      ctx.fillStyle = d < state.speedLevel ? CONFIG.COLOR_PINK : CONFIG.COLOR_MUTED;
+      ctx.beginPath();
+      ctx.arc(dotX, ph / 2 + 12, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  /* ============================================
+     MILESTONE NOTIFICATION
+     ============================================ */
+  function drawMilestone() {
+    if (state.milestoneTimer <= 0) return;
+
+    var t = state.milestoneTimer;
+    state.milestoneTimer--;
+
+    var alpha;
+    if (t > 100)      alpha = (120 - t) / 20;
+    else if (t > 30)  alpha = 1;
+    else              alpha = t / 30;
+
+    var cy = canvas.height * 0.3;
+    var cx = canvas.width / 2;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    ctx.font        = Math.floor(canvas.width * 0.045) + "px 'Press Start 2P', monospace";
+    ctx.textAlign   = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle   = CONFIG.COLOR_YELLOW;
+    ctx.shadowColor = CONFIG.COLOR_YELLOW;
+    ctx.shadowBlur  = 18;
+    ctx.fillText('★ ' + state.milestoneText + ' ★', cx, cy);
+
+    ctx.restore();
   }
 
   /* ============================================
@@ -547,7 +736,7 @@
      ============================================ */
   function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
     // Slightly shrink hitbox for fair play
-    const margin = 8;
+    var margin = 8;
     return (
       ax + margin        < bx + bw - margin &&
       ax + aw - margin   > bx + margin &&
@@ -557,33 +746,46 @@
   }
 
   function circleRect(cx, cy, cr, rx, ry, rw, rh) {
-    const closestX = clamp(cx, rx, rx + rw);
-    const closestY = clamp(cy, ry, ry + rh);
-    const dx = cx - closestX;
-    const dy = cy - closestY;
+    var closestX = clamp(cx, rx, rx + rw);
+    var closestY = clamp(cy, ry, ry + rh);
+    var dx = cx - closestX;
+    var dy = cy - closestY;
     return (dx * dx + dy * dy) < (cr * cr);
   }
 
   /* ============================================
      GAME LOOP
      ============================================ */
-  let raf = null;
+  var raf = null;
 
   function gameLoop() {
     if (!state.running) return;
 
     state.frame++;
 
-    // ---- Input / Player movement ----
-    const p = state.player;
-    const moving = (state.keys.left || state.touch.left) || (state.keys.right || state.touch.right);
+    // ---- Input / Player movement (smooth acceleration) ----
+    var p = state.player;
+    var wantLeft  = state.keys.left  || state.touch.left;
+    var wantRight = state.keys.right || state.touch.right;
 
-    if ((state.keys.left  || state.touch.left)  && p.x > 0) {
-      p.x -= p.speed;
+    if (wantLeft && !wantRight) {
+      p.vx -= CONFIG.PLAYER_ACCEL;
+      if (p.vx < -p.maxSpeed) p.vx = -p.maxSpeed;
+    } else if (wantRight && !wantLeft) {
+      p.vx += CONFIG.PLAYER_ACCEL;
+      if (p.vx > p.maxSpeed) p.vx = p.maxSpeed;
+    } else {
+      // Decelerate
+      p.vx *= CONFIG.PLAYER_DECEL;
+      if (Math.abs(p.vx) < 0.1) p.vx = 0;
     }
-    if ((state.keys.right || state.touch.right) && p.x + p.w < canvas.width) {
-      p.x += p.speed;
-    }
+
+    p.x += p.vx;
+
+    // Clamp to canvas bounds
+    if (p.x < 0) { p.x = 0; p.vx = 0; }
+    if (p.x + p.w > canvas.width) { p.x = canvas.width - p.w; p.vx = 0; }
+
     if (p.invincible > 0) p.invincible--;
 
     // ---- Score ----
@@ -591,13 +793,29 @@
     updateScoreDisplays();
 
     // ---- Speed ramp ----
-    if (state.frame % CONFIG.SPEED_RAMP_INTERVAL === 0) {
-      state.speed = Math.min(state.speed + CONFIG.SPEED_RAMP_AMOUNT, CONFIG.OBSTACLE_SPEED_MAX);
+    if (state.frame > 0 && state.frame % CONFIG.SPEED_RAMP_INTERVAL === 0) {
+      var newSpeed = Math.min(state.speed + CONFIG.SPEED_RAMP_AMOUNT, CONFIG.OBSTACLE_SPEED_MAX);
+      if (newSpeed !== state.speed) {
+        state.speed = newSpeed;
+        state.speedLevel++;
+        state.speedUpTimer = 100;
+      }
     }
 
     // ---- Spawn rate ramp ----
-    if (state.frame % CONFIG.SPAWN_RAMP_INTERVAL === 0) {
+    if (state.frame > 0 && state.frame % CONFIG.SPAWN_RAMP_INTERVAL === 0) {
       state.spawnRate = Math.max(state.spawnRate - CONFIG.SPAWN_RAMP_AMOUNT, CONFIG.OBSTACLE_SPAWN_MIN);
+    }
+
+    // ---- Score milestones ----
+    var milestones = [500, 1000, 2500, 5000, 10000];
+    for (var mi = 0; mi < milestones.length; mi++) {
+      var ms = milestones[mi];
+      // Trigger once when score crosses threshold (within a 2-frame window)
+      if (state.score >= ms && state.score - CONFIG.SCORE_PER_FRAME < ms) {
+        state.milestoneText = ms.toLocaleString() + ' PTS!';
+        state.milestoneTimer = 120;
+      }
     }
 
     // ---- Spawn obstacles ----
@@ -616,8 +834,8 @@
     }
 
     // ---- Update obstacles ----
-    for (let i = state.obstacles.length - 1; i >= 0; i--) {
-      const ob = state.obstacles[i];
+    for (var i = state.obstacles.length - 1; i >= 0; i--) {
+      var ob = state.obstacles[i];
       ob.y += ob.speed;
 
       // Off screen
@@ -629,78 +847,106 @@
       // Collision with player
       if (p.invincible === 0 && rectsOverlap(p.x, p.y, p.w, p.h, ob.x, ob.y, ob.w, ob.h)) {
         spawnParticles(p.x + p.w / 2, p.y + p.h / 2, CONFIG.COLOR_PINK, 30);
+        state.shakeTimer = 12;
+        state.shakeIntensity = 10;
         gameOver();
         return;
       }
     }
 
     // ---- Update quarters ----
-    for (let i = state.quarters.length - 1; i >= 0; i--) {
-      const q = state.quarters[i];
+    for (var j = state.quarters.length - 1; j >= 0; j--) {
+      var q = state.quarters[j];
       q.y += q.speed;
 
       if (q.y > canvas.height + 10) {
-        state.quarters.splice(i, 1);
+        state.quarters.splice(j, 1);
+        // Missed a quarter = combo broken
+        state.comboCount = 0;
+        state.comboTimer = 0;
         continue;
       }
 
       // Collect
       if (circleRect(q.x, q.y, q.r, p.x, p.y, p.w, p.h)) {
-        state.quarters.splice(i, 1);
-        state.score += CONFIG.QUARTER_POINTS;
+        state.quarters.splice(j, 1);
+        var bonus = CONFIG.QUARTER_POINTS;
         state.comboCount++;
-        state.comboTimer = 60;
+        state.comboTimer = 90; // more forgiving combo window
+        // Combo multiplier
+        if (state.comboCount > 1) {
+          bonus = Math.floor(bonus * (1 + state.comboCount * 0.25));
+        }
+        state.score += bonus;
         spawnParticles(q.x, q.y, CONFIG.COLOR_YELLOW, 12);
+        spawnScorePopup(q.x, q.y - 10, '+' + bonus, CONFIG.COLOR_YELLOW);
         updateScoreDisplays();
       }
     }
 
     // ---- Update RESET items ----
-    for (let i = state.resetItems.length - 1; i >= 0; i--) {
-      const ri = state.resetItems[i];
+    for (var k = state.resetItems.length - 1; k >= 0; k--) {
+      var ri = state.resetItems[k];
       ri.y += ri.speed;
 
       if (ri.y > canvas.height + 10) {
-        state.resetItems.splice(i, 1);
+        state.resetItems.splice(k, 1);
         continue;
       }
 
       // Collect
       if (circleRect(ri.x, ri.y, ri.r, p.x, p.y, p.w, p.h)) {
-        state.resetItems.splice(i, 1);
-        // Clear ALL obstacles — that's the reset!
-        state.obstacles.forEach(ob => {
-          spawnParticles(ob.x + ob.w / 2, ob.y + ob.h / 2, CONFIG.COLOR_GREEN, 8);
-        });
+        state.resetItems.splice(k, 1);
+        // Clear ALL obstacles
+        for (var m = 0; m < state.obstacles.length; m++) {
+          var o = state.obstacles[m];
+          spawnParticles(o.x + o.w / 2, o.y + o.h / 2, CONFIG.COLOR_GREEN, 8);
+        }
         state.obstacles = [];
         state.flashTimer = 20;
+        state.shakeTimer = 8;
+        state.shakeIntensity = 6;
         p.invincible     = 90; // 1.5s invincibility
         state.score     += 200;
         spawnParticles(ri.x, ri.y, CONFIG.COLOR_GREEN, 20);
+        spawnScorePopup(ri.x, ri.y - 10, '+200 RESET!', CONFIG.COLOR_GREEN);
         updateScoreDisplays();
       }
     }
 
-    // ---- Update particles ----
+    // ---- Update particles & popups ----
     updateParticles();
+    updateScorePopups();
 
     // ---- DRAW ----
+    ctx.save();
+    applyScreenShake();
+
     drawBackground();
     drawScreenFlash();
 
     // Obstacles
-    state.obstacles.forEach(ob  => drawObstacle(ob));
-    state.quarters.forEach(q    => drawQuarter(q));
-    state.resetItems.forEach(ri => drawResetItem(ri));
+    for (var a = 0; a < state.obstacles.length; a++) drawObstacle(state.obstacles[a]);
+    for (var b = 0; b < state.quarters.length; b++)  drawQuarter(state.quarters[b]);
+    for (var c = 0; c < state.resetItems.length; c++) drawResetItem(state.resetItems[c]);
 
     // Particles (above collectibles, below player)
     drawParticles();
+
+    // Score popups
+    drawScorePopups();
 
     // Player
     drawPlayer(p);
 
     // HUD
     drawHUD();
+
+    // Alerts (above everything)
+    drawSpeedUpAlert();
+    drawMilestone();
+
+    ctx.restore();
 
     raf = requestAnimationFrame(gameLoop);
   }
@@ -717,15 +963,26 @@
     state.quarters   = [];
     state.resetItems = [];
     state.particles  = [];
+    state.scorePopups = [];
     state.flashTimer = 0;
     state.comboCount = 0;
     state.comboTimer = 0;
-    state.player     = createPlayer();
+    state.shakeTimer     = 0;
+    state.shakeIntensity = 0;
+    state.speedUpTimer   = 0;
+    state.speedLevel     = 0;
+    state.milestoneTimer = 0;
+    state.milestoneText  = '';
+    state.deathAnimating = false;
+    state.deathFrame     = 0;
+    state.isNewRecord    = false;
+    state.player         = createPlayer();
     updateScoreDisplays();
   }
 
   function startGame() {
-    if (state.running) return;
+    if (state.running || state.deathAnimating) return;
+    resizeCanvas(); // re-measure in case layout changed
     initGame();
     state.running = true;
     state.started = true;
@@ -735,31 +992,146 @@
   }
 
   function gameOver() {
-    state.running = false;
+    state.running      = false;
+    state.deathAnimating = true;
+    state.deathFrame   = 0;
     if (raf) { cancelAnimationFrame(raf); raf = null; }
 
-    const isNewRecord = saveHiScore(state.score);
+    // Big death explosion: lots of particles, hard shake
+    var p = state.player;
+    state.shakeIntensity = 18;
+    state.shakeTimer     = 40;
+    spawnParticles(p.x + p.w / 2, p.y + p.h / 2, CONFIG.COLOR_PINK,   50);
+    spawnParticles(p.x + p.w / 2, p.y + p.h / 2, CONFIG.COLOR_WHITE,  20);
+    spawnParticles(p.x + p.w / 2, p.y + p.h / 2, CONFIG.COLOR_BLUE,   15);
 
-    if (finalScore)     finalScore.textContent = String(state.score).padStart(5, '0');
-    if (newRecordBlock) newRecordBlock.style.display = isNewRecord ? 'flex' : 'none';
+    // Red screen flash
+    state.flashTimer = 0; // repurpose for red death flash
+    var deathFlash = 30;
 
-    updateScoreDisplays();
-    showOverlay(gameOverScreen);
+    state.isNewRecord = saveHiScore(state.score);
+
+    // Run death animation loop for ~60 frames then show overlay
+    function deathLoop() {
+      state.deathFrame++;
+
+      ctx.save();
+
+      // Screen shake
+      if (state.shakeTimer > 0) {
+        var sx = (Math.random() - 0.5) * state.shakeIntensity;
+        var sy = (Math.random() - 0.5) * state.shakeIntensity;
+        ctx.translate(sx, sy);
+        state.shakeTimer--;
+        state.shakeIntensity *= 0.88;
+      }
+
+      drawBackground();
+
+      // Red death flash overlay (fades out)
+      if (deathFlash > 0) {
+        var fa = (deathFlash / 30) * 0.55;
+        ctx.fillStyle = 'rgba(255, 0, 80, ' + fa + ')';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        deathFlash--;
+      }
+
+      // Keep drawing obstacles (frozen in place)
+      for (var a = 0; a < state.obstacles.length; a++) drawObstacle(state.obstacles[a]);
+
+      updateParticles();
+      drawParticles();
+      updateScorePopups();
+      drawScorePopups();
+
+      ctx.restore();
+
+      if (state.deathFrame < 65) {
+        raf = requestAnimationFrame(deathLoop);
+      } else {
+        // Animation done — show game over overlay
+        state.deathAnimating = false;
+        raf = null;
+
+        if (finalScore)     finalScore.textContent = String(state.score).padStart(5, '0');
+        if (newRecordBlock) newRecordBlock.style.display = state.isNewRecord ? 'flex' : 'none';
+
+        updateScoreDisplays();
+
+        // Trigger CSS celebration class if new record
+        if (gameOverScreen) {
+          if (state.isNewRecord) {
+            gameOverScreen.classList.add('new-record-screen');
+            spawnConfetti(gameOverScreen);
+          } else {
+            gameOverScreen.classList.remove('new-record-screen');
+            removeConfetti(gameOverScreen);
+          }
+        }
+
+        showOverlay(gameOverScreen);
+      }
+    }
+
+    raf = requestAnimationFrame(deathLoop);
   }
 
   function showOverlay(el)  { if (el) el.classList.remove('hidden'); }
   function hideOverlay(el)  { if (el) el.classList.add('hidden'); }
 
   /* ============================================
+     CONFETTI — HTML overlay celebration
+     ============================================ */
+  var CONFETTI_COLORS = ['#ffd700','#00d4ff','#ff0080','#00ff41','#ffffff','#ff6600'];
+
+  function spawnConfetti(container) {
+    // Remove any existing confetti first
+    removeConfetti(container);
+
+    var el = document.createElement('div');
+    el.className = 'confetti-container';
+
+    for (var i = 0; i < 28; i++) {
+      var piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left         = (Math.random() * 100) + '%';
+      piece.style.background   = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+      piece.style.width        = (5 + Math.random() * 7) + 'px';
+      piece.style.height       = (5 + Math.random() * 7) + 'px';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      piece.style.animationDuration  = (1.2 + Math.random() * 2) + 's';
+      piece.style.animationDelay     = (Math.random() * 1.5) + 's';
+      piece.style.animationIterationCount = 'infinite';
+      el.appendChild(piece);
+    }
+
+    container.insertBefore(el, container.firstChild);
+  }
+
+  function removeConfetti(container) {
+    var existing = container.querySelector('.confetti-container');
+    if (existing) existing.parentNode.removeChild(existing);
+  }
+
+  /* ============================================
      INPUT — Keyboard
      ============================================ */
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') state.keys.left  = true;
-    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') state.keys.right = true;
-    if ((e.key === 'Enter' || e.key === ' ') && !state.running) startGame();
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') {
+      e.preventDefault();
+      state.keys.left  = true;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+      e.preventDefault();
+      state.keys.right = true;
+    }
+    if ((e.key === 'Enter' || e.key === ' ') && !state.running) {
+      e.preventDefault();
+      startGame();
+    }
   });
 
-  document.addEventListener('keyup', e => {
+  document.addEventListener('keyup', function (e) {
     if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') state.keys.left  = false;
     if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') state.keys.right = false;
   });
@@ -769,14 +1141,13 @@
      ============================================ */
   function bindTouchZone(el, side) {
     if (!el) return;
-    el.addEventListener('touchstart', e => {
+    el.addEventListener('touchstart', function (e) {
       e.preventDefault();
       state.touch[side] = true;
-      if (!state.running && !state.started) startGame();
-      else if (!state.running && state.started) startGame();
+      if (!state.running) startGame();
     }, { passive: false });
-    el.addEventListener('touchend',   () => { state.touch[side] = false; });
-    el.addEventListener('touchcancel',() => { state.touch[side] = false; });
+    el.addEventListener('touchend', function () { state.touch[side] = false; });
+    el.addEventListener('touchcancel', function () { state.touch[side] = false; });
   }
 
   bindTouchZone(touchLeft,  'left');
@@ -787,19 +1158,31 @@
      ============================================ */
   if (startScreen) {
     startScreen.addEventListener('click', startGame);
-    startScreen.addEventListener('touchstart', e => { e.preventDefault(); startGame(); }, { passive: false });
+    startScreen.addEventListener('touchstart', function (e) { e.preventDefault(); startGame(); }, { passive: false });
   }
 
   if (restartBtn) {
-    restartBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      startGame();
+    });
   }
 
   /* ============================================
      CANVAS click starts the game too
      ============================================ */
-  canvas.addEventListener('click', () => {
+  canvas.addEventListener('click', function () {
     if (!state.running) startGame();
   });
+
+  /* ============================================
+     Prevent default on game body to stop scrolling on mobile
+     ============================================ */
+  document.body.addEventListener('touchmove', function (e) {
+    if (document.body.classList.contains('game-body')) {
+      e.preventDefault();
+    }
+  }, { passive: false });
 
   /* ============================================
      INIT

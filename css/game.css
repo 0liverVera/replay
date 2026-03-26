@@ -8,7 +8,8 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  padding: 0;
+  padding-top: 64px; /* clear the fixed nav */
+  padding-bottom: 8px;
   overflow: hidden;
 }
 
@@ -43,8 +44,9 @@
     inset 0 0 40px rgba(0,0,0,0.6);
   overflow: hidden;
 
-  /* Dynamic sizing handled by JS, fallback: */
-  width: 440px;
+  /* Fill available space after nav + padding, with a little breathing room */
+  height: calc(100vh - 84px);
+  width: min(520px, calc((100vh - 84px) * 0.62));
 }
 
 /* ---- Bezel Top Bar ---- */
@@ -66,6 +68,12 @@
   text-shadow: var(--glow-blue);
   letter-spacing: 0.1em;
   white-space: nowrap;
+}
+
+.bezel-scores {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .score-display,
@@ -90,6 +98,26 @@
   letter-spacing: 0.05em;
   min-width: 60px;
   text-align: right;
+}
+
+/* ---- Player Bar ---- */
+.player-bar {
+  background: #060606;
+  border-bottom: 1px solid #141414;
+  padding: 0.25rem 1rem;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.player-bar-text {
+  font-family: var(--font-pixel);
+  font-size: 0.3rem;
+  color: var(--color-muted);
+  letter-spacing: 0.08em;
+}
+
+.player-bar-text.has-wallet {
+  color: var(--color-blue);
 }
 
 /* ---- Canvas Container ---- */
@@ -163,6 +191,8 @@
   justify-content: center;
   z-index: 100;
   backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transition: opacity 0.3s ease;
 }
 
 .game-overlay.hidden {
@@ -243,6 +273,73 @@
   text-shadow: 0 0 20px rgba(255,255,255,0.3);
 }
 
+/* ---- New High Score celebration overlay ---- */
+
+/* Rainbow color cycle for record text */
+@keyframes rainbowText {
+  0%   { color: var(--color-yellow);  text-shadow: 0 0 14px rgba(255,215,0,0.8); }
+  25%  { color: var(--color-blue);    text-shadow: 0 0 14px rgba(0,212,255,0.8); }
+  50%  { color: var(--color-pink);    text-shadow: 0 0 14px rgba(255,0,128,0.8); }
+  75%  { color: var(--color-green);   text-shadow: 0 0 14px rgba(0,255,65,0.8); }
+  100% { color: var(--color-yellow);  text-shadow: 0 0 14px rgba(255,215,0,0.8); }
+}
+
+/* Score count-up pop */
+@keyframes scorePop {
+  0%   { transform: scale(0.5);  opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+/* Overlay border pulse when new record */
+@keyframes borderPulse {
+  0%, 100% { box-shadow: inset 0 0 0 2px rgba(255,215,0,0.4), 0 0 30px rgba(255,215,0,0.1); }
+  50%       { box-shadow: inset 0 0 0 2px rgba(255,215,0,1),   0 0 60px rgba(255,215,0,0.3); }
+}
+
+/* Confetti pieces rain down */
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+}
+
+.new-record-screen .overlay-content {
+  animation: borderPulse 1.2s ease-in-out infinite;
+  border: 2px solid rgba(255,215,0,0.5);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.new-record-screen .overlay-final-score {
+  animation: scorePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  color: var(--color-yellow);
+  text-shadow: 0 0 30px rgba(255,215,0,0.6);
+}
+
+.new-record-screen .overlay-title {
+  animation: rainbowText 1.5s linear infinite;
+}
+
+/* Confetti container */
+.confetti-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  animation: confettiFall linear infinite;
+}
+
+/* Keep overlay content above confetti */
+.game-overlay .overlay-content { position: relative; z-index: 1; }
+
 .new-record {
   font-family: var(--font-pixel);
   font-size: 0.55rem;
@@ -270,7 +367,7 @@
   animation: blink 1s step-end infinite;
 }
 
-/* ---- Touch Zones ---- */
+/* ---- Touch Zones (inside canvas-container) ---- */
 .touch-zone {
   position: absolute;
   top: 0; bottom: 0;
@@ -284,6 +381,13 @@
 .touch-left  { left: 0; }
 .touch-right { right: 0; }
 
+/* On desktop, touch zones shouldn't interfere */
+@media (pointer: fine) {
+  .touch-zone {
+    pointer-events: none;
+  }
+}
+
 /* ============================================
    RESPONSIVE — Game
    ============================================ */
@@ -293,14 +397,27 @@
     border-left: none;
     border-right: none;
     width: 100% !important;
+    height: calc(100vh - 72px) !important;
   }
 
   .bezel-top { padding: 0.5rem 0.75rem; }
   .bezel-bottom { padding: 0.5rem; }
   .bezel-controls { gap: 1rem; }
+
+  .mobile-hint { display: block; }
+
+  .overlay-content {
+    padding: 1.5rem 1rem;
+    gap: 0.75rem;
+  }
+}
+
+@media (pointer: fine) {
+  .mobile-hint { display: none; }
 }
 
 @media (max-height: 600px) {
   .bezel-bottom { display: none; }
   .bezel-top { padding: 0.4rem 0.75rem; }
+  .player-bar { padding: 0.15rem 0.75rem; }
 }
