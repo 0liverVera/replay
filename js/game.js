@@ -152,8 +152,13 @@
   /* ============================================
      HI-SCORE — localStorage
      ============================================ */
+  function getHiScoreKey() {
+    var wallet = window.replayGetWallet ? window.replayGetWallet() : null;
+    return wallet ? 'replay_hiscore_' + wallet : 'replay_hiscore_guest';
+  }
+
   function loadHiScore() {
-    var stored = localStorage.getItem('replay_hiscore');
+    var stored = localStorage.getItem(getHiScoreKey());
     state.hiScore = stored ? parseInt(stored, 10) : 0;
     updateScoreDisplays();
   }
@@ -161,7 +166,7 @@
   function saveHiScore(score) {
     if (score > state.hiScore) {
       state.hiScore = score;
-      localStorage.setItem('replay_hiscore', String(score));
+      localStorage.setItem(getHiScoreKey(), String(score));
       return true; // new record
     }
     return false;
@@ -1289,10 +1294,13 @@
   // Draw static start background
   drawBackground();
 
-  // Initial leaderboard load (real data from Supabase, or static fallback)
+  // Initial leaderboard load
   if (window.replayLoadLeaderboard) {
     window.replayLoadLeaderboard('gameLbBody', 10);
   }
+
+  // Expose so main.js can reload hi-score after login/logout
+  window.replayReloadHiScore = loadHiScore;
 
   /* ============================================
      UTILITIES

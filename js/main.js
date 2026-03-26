@@ -78,6 +78,9 @@
 
     updatePlayerBar();
     updateLoginGate();
+
+    // Reload wallet-specific hi-score in game (if on game page)
+    if (window.replayReloadHiScore) window.replayReloadHiScore();
   }
 
   function updatePlayerBar() {
@@ -250,11 +253,13 @@
     });
   });
 
-  /* ---- High score display on index ---- */
+  /* ---- High score display on index (wallet-specific) ---- */
   var hiScoreEl = document.querySelector('.arcade-score');
   if (hiScoreEl) {
-    var stored = localStorage.getItem('replay_hiscore');
-    if (stored) hiScoreEl.textContent = 'HI-SCORE: ' + String(stored).padStart(5, '0');
+    var wallet = getWallet();
+    var hiKey  = wallet ? 'replay_hiscore_' + wallet : null;
+    var stored = hiKey ? localStorage.getItem(hiKey) : null;
+    hiScoreEl.textContent = 'HI-SCORE: ' + (stored ? String(stored).padStart(5, '0') : '00000');
   }
 
 })();
