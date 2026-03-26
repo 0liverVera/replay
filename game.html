@@ -37,7 +37,12 @@
   <div class="wallet-modal-backdrop hidden" id="walletModal">
     <div class="wallet-modal">
       <button class="wallet-modal-close" id="walletModalClose" aria-label="Close">&times;</button>
-      <h2 class="wallet-modal-title">ENTER YOUR SOLANA WALLET</h2>
+      <h2 class="wallet-modal-title">SIGN IN TO PLAY</h2>
+      <button class="btn-x" id="xLoginBtn">
+        <span class="btn-x-icon">𝕏</span>
+        SIGN IN WITH X
+      </button>
+      <div class="modal-divider">OR</div>
       <input
         type="text"
         class="wallet-modal-input"
@@ -108,6 +113,17 @@
               </div>
               <button class="btn-primary btn-pulse overlay-btn" id="restartBtn">PRESS START TO REPLAY</button>
               <a href="index.html" class="overlay-home-link">&larr; BACK TO HOME</a>
+            </div>
+          </div>
+
+          <!-- Login Gate Overlay (shown when not logged in) -->
+          <div class="game-overlay hidden" id="loginGate">
+            <div class="overlay-content">
+              <div class="overlay-title">$REPLAY</div>
+              <div class="overlay-sub">MEMBERS ONLY</div>
+              <div class="overlay-insert blink-text">LOGIN TO PLAY</div>
+              <div class="overlay-hint">SIGN IN TO SUBMIT YOUR SCORE</div>
+              <button class="btn-primary btn-pulse overlay-btn" id="loginGateBtn">LOG IN</button>
             </div>
           </div>
 
