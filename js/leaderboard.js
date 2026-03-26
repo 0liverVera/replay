@@ -17,7 +17,7 @@
    ─────────────────────────────────────────
    ============================================ */
 
-var FIREBASE_URL = '';  // e.g. 'https://replay-12345-default-rtdb.firebaseio.com'
+var FIREBASE_URL = 'https://replay-ad17a-default-rtdb.firebaseio.com';
 
 /* ---- Fallback static data (shown until Firebase is configured) ---- */
 var LEADERBOARD_DATA = [
