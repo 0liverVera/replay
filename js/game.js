@@ -49,7 +49,7 @@
 
     // Colors
     COLOR_BG:       '#000000',
-    COLOR_BLUE:     '#00d4ff',
+    COLOR_BLUE:     '#FF6B00',
     COLOR_PINK:     '#ff0080',
     COLOR_GREEN:    '#00ff41',
     COLOR_YELLOW:   '#ffd700',
