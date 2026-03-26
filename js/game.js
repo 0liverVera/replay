@@ -24,7 +24,7 @@
     OBSTACLE_WIDTH_MAX:  80,
     OBSTACLE_HEIGHT_MIN: 35,
     OBSTACLE_HEIGHT_MAX: 55,
-    OBSTACLE_SPEED_BASE: 3.5,   // start fast enough to feel alive
+    OBSTACLE_SPEED_BASE: 5.0,   // start fast
     OBSTACLE_SPEED_MAX:  14,    // max speed — fast but readable
     OBSTACLE_SPAWN_RATE: 140,   // start moderate
     OBSTACLE_SPAWN_MIN:  28,    // end dense but not overwhelming
