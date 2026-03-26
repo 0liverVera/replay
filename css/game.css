@@ -1,0 +1,306 @@
+/* ============================================
+   $REPLAY — Game Page Styles
+   ============================================ */
+
+/* ---- Game Page Layout ---- */
+.game-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 0;
+  overflow: hidden;
+}
+
+.game-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- Game Nav overrides ---- */
+.nav-game {
+  background: rgba(10, 10, 10, 0.97) !important;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ---- Arcade Bezel ---- */
+.game-bezel {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  background: #0e0e0e;
+  border: 2px solid #1e1e1e;
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px #2a2a2a,
+    0 0 60px rgba(0, 212, 255, 0.1),
+    0 0 120px rgba(0, 212, 255, 0.04),
+    inset 0 0 40px rgba(0,0,0,0.6);
+  overflow: hidden;
+
+  /* Dynamic sizing handled by JS, fallback: */
+  width: 440px;
+}
+
+/* ---- Bezel Top Bar ---- */
+.bezel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  background: #080808;
+  border-bottom: 1px solid #1a1a1a;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.bezel-title {
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  color: var(--color-blue);
+  text-shadow: var(--glow-blue);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.score-display,
+.hiscore-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.score-label {
+  font-family: var(--font-pixel);
+  font-size: 0.3rem;
+  color: var(--color-muted);
+  letter-spacing: 0.1em;
+}
+
+.score-value {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--color-white);
+  letter-spacing: 0.05em;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* ---- Canvas Container ---- */
+.canvas-container {
+  position: relative;
+  background: #000;
+  flex: 1;
+  overflow: hidden;
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- Bezel Bottom ---- */
+.bezel-bottom {
+  padding: 0.75rem 1rem;
+  background: #080808;
+  border-top: 1px solid #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bezel-controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.bezel-joystick {
+  width: 28px; height: 28px;
+  background: #1a1a1a;
+  border: 2px solid #2a2a2a;
+  border-radius: 50%;
+  position: relative;
+}
+.bezel-joystick::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px; height: 10px;
+  background: #2a2a2a;
+  border-radius: 50%;
+}
+
+.bezel-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+.bezel-btn-circle {
+  display: block;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+.bezel-btn-circle.red  { background: rgba(255, 50, 50, 0.4); }
+.bezel-btn-circle.blue { background: rgba(0, 212, 255, 0.3); }
+
+/* ---- Game Overlay (Start / Game Over) ---- */
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(2px);
+}
+
+.game-overlay.hidden {
+  display: none;
+}
+
+.overlay-content {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.overlay-title {
+  font-family: var(--font-pixel);
+  font-size: clamp(1.2rem, 5vw, 2rem);
+  color: var(--color-blue);
+  text-shadow: var(--glow-blue);
+  letter-spacing: 0.05em;
+}
+.overlay-title.red-text {
+  color: var(--color-pink);
+  text-shadow: var(--glow-pink);
+}
+
+.overlay-sub {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--color-muted);
+  letter-spacing: 0.15em;
+}
+
+.overlay-insert {
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  color: var(--color-yellow);
+  letter-spacing: 0.08em;
+  margin-top: 0.5rem;
+}
+
+.overlay-hint {
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  color: var(--color-muted);
+  letter-spacing: 0.05em;
+}
+
+.overlay-controls {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.control-hint {
+  font-size: 0.75rem;
+  color: #555;
+  font-family: var(--font-body);
+}
+
+.overlay-score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.overlay-score-label {
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  color: var(--color-muted);
+  letter-spacing: 0.1em;
+}
+.overlay-final-score {
+  font-family: var(--font-pixel);
+  font-size: 1.4rem;
+  color: var(--color-white);
+  text-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.new-record {
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  color: var(--color-yellow);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+
+.overlay-btn {
+  margin-top: 0.5rem;
+  font-size: 0.5rem;
+}
+
+.overlay-home-link {
+  font-family: var(--font-pixel);
+  font-size: 0.4rem;
+  color: var(--color-muted);
+  letter-spacing: 0.08em;
+  transition: color var(--transition);
+}
+.overlay-home-link:hover { color: var(--color-blue); }
+
+/* Blink utility */
+.blink-text {
+  animation: blink 1s step-end infinite;
+}
+
+/* ---- Touch Zones ---- */
+.touch-zone {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 50%;
+  z-index: 200;
+  pointer-events: all;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.touch-left  { left: 0; }
+.touch-right { right: 0; }
+
+/* ============================================
+   RESPONSIVE — Game
+   ============================================ */
+@media (max-width: 768px) {
+  .game-bezel {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    width: 100% !important;
+  }
+
+  .bezel-top { padding: 0.5rem 0.75rem; }
+  .bezel-bottom { padding: 0.5rem; }
+  .bezel-controls { gap: 1rem; }
+}
+
+@media (max-height: 600px) {
+  .bezel-bottom { display: none; }
+  .bezel-top { padding: 0.4rem 0.75rem; }
+}

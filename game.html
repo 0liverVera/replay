@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>$REPLAY — Play Now</title>
+  <meta name="description" content="Play the $REPLAY arcade game. Dodge the suits, collect quarters, hit the reset button." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/game.css" />
+</head>
+<body class="game-body">
+
+  <!-- CRT Scanline Overlay -->
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav nav-game" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-back">← BACK</a>
+      <a href="index.html" class="nav-logo">$REPLAY</a>
+      <div class="nav-right">
+        <button class="btn-wallet" id="walletBtn">CONNECT WALLET</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Game Container -->
+  <main class="game-page">
+    <div class="game-wrapper">
+
+      <!-- Arcade Bezel Frame -->
+      <div class="game-bezel">
+        <div class="bezel-top">
+          <span class="bezel-title">$REPLAY ARCADE</span>
+          <div class="score-display">
+            <span class="score-label">SCORE</span>
+            <span class="score-value" id="scoreDisplay">00000</span>
+          </div>
+          <div class="hiscore-display">
+            <span class="score-label">BEST</span>
+            <span class="score-value" id="hiScoreDisplay">00000</span>
+          </div>
+        </div>
+
+        <!-- Game Canvas Area -->
+        <div class="canvas-container" id="canvasContainer">
+          <canvas id="gameCanvas"></canvas>
+
+          <!-- Start Screen Overlay -->
+          <div class="game-overlay" id="startScreen">
+            <div class="overlay-content">
+              <div class="overlay-title">$REPLAY</div>
+              <div class="overlay-sub">ARCADE</div>
+              <div class="overlay-insert blink-text">INSERT COIN</div>
+              <div class="overlay-hint">CLICK / TAP TO BEGIN</div>
+              <div class="overlay-controls">
+                <div class="control-hint">← → or A / D to move</div>
+                <div class="control-hint">Mobile: tap left/right side</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Game Over Overlay -->
+          <div class="game-overlay hidden" id="gameOverScreen">
+            <div class="overlay-content">
+              <div class="overlay-title red-text">GAME OVER</div>
+              <div class="overlay-score-block">
+                <div class="overlay-score-label">SCORE</div>
+                <div class="overlay-final-score" id="finalScore">00000</div>
+              </div>
+              <div class="overlay-score-block" id="newRecordBlock" style="display:none">
+                <div class="new-record blink-text">★ NEW HIGH SCORE ★</div>
+              </div>
+              <button class="btn-primary btn-pulse overlay-btn" id="restartBtn">PRESS START TO REPLAY</button>
+              <a href="index.html" class="overlay-home-link">← BACK TO HOME</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bezel Bottom -->
+        <div class="bezel-bottom">
+          <div class="bezel-controls">
+            <div class="bezel-joystick"></div>
+            <div class="bezel-btns">
+              <span class="bezel-btn-circle red"></span>
+              <span class="bezel-btn-circle blue"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Touch Zones (invisible, full canvas height) -->
+      <div class="touch-zone touch-left" id="touchLeft" aria-hidden="true"></div>
+      <div class="touch-zone touch-right" id="touchRight" aria-hidden="true"></div>
+
+    </div>
+  </main>
+
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
