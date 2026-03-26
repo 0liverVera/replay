@@ -1190,6 +1190,50 @@
   }
 
   /* ============================================
+     SHARE SCORE
+     ============================================ */
+  var shareBtn     = document.getElementById('shareBtn');
+  var shareTooltip = document.getElementById('shareTooltip');
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var score    = Math.floor(state.score);
+      var siteUrl  = window.location.origin + (window.location.pathname.replace(/[^/]+$/, '') || '/');
+      var gameUrl  = siteUrl + 'game.html';
+      var text     = '$REPLAY ARCADE \uD83D\uDD79\uFE0F I scored ' + score + '! Can you beat it? Play now \u2192 ' + gameUrl;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showCopied).catch(showCopied);
+      } else {
+        // Fallback for older browsers
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity  = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (err) {}
+        document.body.removeChild(ta);
+        showCopied();
+      }
+    });
+  }
+
+  function showCopied() {
+    if (!shareTooltip) return;
+    shareTooltip.classList.remove('hidden');
+    // Re-trigger animation by cloning
+    var clone = shareTooltip.cloneNode(true);
+    clone.classList.remove('hidden');
+    shareTooltip.parentNode.replaceChild(clone, shareTooltip);
+    shareTooltip = clone; // update reference
+    setTimeout(function () {
+      if (shareTooltip) shareTooltip.classList.add('hidden');
+    }, 1600);
+  }
+
+  /* ============================================
      CANVAS click starts the game too
      ============================================ */
   canvas.addEventListener('click', function () {
