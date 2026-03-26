@@ -191,21 +191,11 @@
               <th>SCORE</th>
             </tr>
           </thead>
-          <tbody>
-            <tr class="lb-gold">   <td>#1</td>  <td>8xKt...mR2q</td> <td>48,250</td> </tr>
-            <tr class="lb-silver"> <td>#2</td>  <td>3Pzv...dK7n</td> <td>41,800</td> </tr>
-            <tr class="lb-bronze"> <td>#3</td>  <td>FjQx...9cWw</td> <td>37,150</td> </tr>
-            <tr>                   <td>#4</td>  <td>Bb7L...hT4e</td> <td>29,400</td> </tr>
-            <tr>                   <td>#5</td>  <td>wXaN...sP0v</td> <td>24,900</td> </tr>
-            <tr>                   <td>#6</td>  <td>qZ2m...LK8f</td> <td>21,350</td> </tr>
-            <tr>                   <td>#7</td>  <td>rN5p...yM3s</td> <td>18,700</td> </tr>
-            <tr>                   <td>#8</td>  <td>tHv9...cJ6k</td> <td>15,200</td> </tr>
-            <tr>                   <td>#9</td>  <td>gXwB...dE1o</td> <td>12,850</td> </tr>
-            <tr>                   <td>#10</td> <td>mCz4...nR7u</td> <td>10,100</td> </tr>
-          </tbody>
+          <tbody id="homeLbBody"></tbody>
         </table>
       </div>
-      <p class="lb-cta">Play the game. Beat the score. Claim your spot.</p>
+      <p class="lb-cta" style="margin-bottom:1.5rem">Play the game. Beat the score. Claim your spot.</p>
+      <a href="game.html#leaderboard" class="btn-primary">VIEW FULL LEADERBOARD</a>
     </div>
   </section>
 
@@ -285,6 +275,8 @@
     </div>
   </footer>
 
+  <script src="js/leaderboard.js"></script>
   <script src="js/main.js"></script>
+  <script>replayRenderLeaderboard('homeLbBody', 3);</script>
 </body>
 </html>

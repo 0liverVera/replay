@@ -1174,8 +1174,7 @@ body { animation: screenFlicker 8s infinite; }
    GAME BODY OVERRIDES
    ============================================ */
 .game-body {
-  overflow: hidden;
-  height: 100vh;
+  /* overflow is managed by JS during active gameplay only */
   min-height: 100vh;
 }
 .game-body .crt-overlay { z-index: 10000; pointer-events: none; }

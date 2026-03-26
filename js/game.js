@@ -1091,6 +1091,15 @@
         }
 
         showOverlay(gameOverScreen);
+
+        // Re-render leaderboard with player's score highlighted, then auto-scroll
+        if (window.replayRenderLeaderboard) {
+          window.replayRenderLeaderboard('gameLbBody', 10, Math.floor(state.score));
+        }
+        setTimeout(function () {
+          var lb = document.getElementById('leaderboard');
+          if (lb) lb.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 500);
       }
     }
 
@@ -1244,10 +1253,23 @@
      Prevent default on game body to stop scrolling on mobile
      ============================================ */
   document.body.addEventListener('touchmove', function (e) {
-    if (document.body.classList.contains('game-body')) {
+    // Only block scroll during active gameplay — allow leaderboard scrolling otherwise
+    if (state.running || state.deathAnimating) {
       e.preventDefault();
     }
   }, { passive: false });
+
+  /* ============================================
+     PLAY AGAIN BUTTON (in leaderboard section)
+     ============================================ */
+  var playAgainBtn = document.getElementById('playAgainBtn');
+  if (playAgainBtn) {
+    playAgainBtn.addEventListener('click', function () {
+      var gamePage = document.querySelector('.game-page');
+      if (gamePage) gamePage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(startGame, 450);
+    });
+  }
 
   /* ============================================
      INIT
@@ -1257,6 +1279,11 @@
 
   // Draw static start background
   drawBackground();
+
+  // Initial leaderboard render
+  if (window.replayRenderLeaderboard) {
+    window.replayRenderLeaderboard('gameLbBody', 10);
+  }
 
   /* ============================================
      UTILITIES
