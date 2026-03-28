@@ -164,9 +164,10 @@
   }
 
   function saveHiScore(score) {
-    if (score > state.hiScore) {
-      state.hiScore = score;
-      localStorage.setItem(getHiScoreKey(), String(score));
+    var intScore = Math.floor(score);
+    if (intScore > state.hiScore) {
+      state.hiScore = intScore;
+      localStorage.setItem(getHiScoreKey(), String(intScore));
       return true; // new record
     }
     return false;

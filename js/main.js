@@ -97,7 +97,7 @@
         if (hiScoreEl) hiScoreEl.textContent = String(best).padStart(5, '0');
         // Update hi-score on home page arcade preview
         var previewEl = document.querySelector('.arcade-score');
-        if (previewEl) previewEl.textContent = 'HI-SCORE: ' + String(best).padStart(5, '0');
+        if (previewEl) previewEl.textContent = 'HI-SCORE: ' + Math.floor(best).toLocaleString();
       }
     } catch (e) {}
   }
@@ -287,7 +287,7 @@
     var wallet = getWallet();
     var hiKey  = wallet ? 'replay_hiscore_' + wallet : null;
     var stored = hiKey ? localStorage.getItem(hiKey) : null;
-    hiScoreEl.textContent = 'HI-SCORE: ' + (stored ? String(stored).padStart(5, '0') : '00000');
+    hiScoreEl.textContent = 'HI-SCORE: ' + (stored ? Math.floor(Number(stored)).toLocaleString() : '00000');
   }
 
 })();
