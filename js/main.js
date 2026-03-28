@@ -290,18 +290,20 @@
     hiScoreEl.textContent = 'HI-SCORE: ' + (stored ? Math.floor(Number(stored)).toLocaleString() : '00000');
   }
 
-  /* ---- First-visit popup ---- */
+  /* ---- First-visit popup (shows every 4 sessions) ---- */
   var fvBackdrop = document.getElementById('fvBackdrop');
   if (fvBackdrop) {
-    var fvSeen = localStorage.getItem('replay_fv_seen');
-    if (!fvSeen) {
+    var SHOW_EVERY = 4;
+    var fvCount = parseInt(localStorage.getItem('replay_fv_count') || '0', 10) + 1;
+    localStorage.setItem('replay_fv_count', String(fvCount));
+    var showPopup = (fvCount === 1) || (fvCount % SHOW_EVERY === 0);
+    if (showPopup) {
       setTimeout(function () {
         fvBackdrop.classList.remove('hidden');
       }, 1200);
     }
     function closeFv() {
       fvBackdrop.classList.add('hidden');
-      localStorage.setItem('replay_fv_seen', '1');
     }
     var fvClose   = document.getElementById('fvClose');
     var fvDismiss = document.getElementById('fvDismiss');
