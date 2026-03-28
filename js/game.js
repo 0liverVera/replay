@@ -1037,6 +1037,14 @@
 
     state.isNewRecord = saveHiScore(state.score);
 
+    // Save to cloud if wallet connected
+    if (state.isNewRecord && typeof window.replayGetWallet === 'function') {
+      var wallet = window.replayGetWallet();
+      if (wallet && typeof window.replaySaveScore === 'function') {
+        window.replaySaveScore(wallet, state.score);
+      }
+    }
+
     // Run death animation loop for ~60 frames then show overlay
     function deathLoop() {
       state.deathFrame++;

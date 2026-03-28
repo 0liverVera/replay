@@ -83,6 +83,25 @@
     if (window.replayReloadHiScore) window.replayReloadHiScore();
   }
 
+  // Load player's cloud hi-score and sync with local
+  async function syncPlayerScore(wallet) {
+    if (!wallet || typeof window.replayGetPlayerScore !== 'function') return;
+    try {
+      var cloudScore = await window.replayGetPlayerScore(wallet);
+      var localScore = parseInt(localStorage.getItem('replay_hiscore') || '0', 10);
+      var best = Math.max(cloudScore, localScore);
+      if (best > 0) {
+        localStorage.setItem('replay_hiscore', String(best));
+        // Update hi-score display on game page
+        var hiScoreEl = document.getElementById('hiScoreDisplay');
+        if (hiScoreEl) hiScoreEl.textContent = String(best).padStart(5, '0');
+        // Update hi-score on home page arcade preview
+        var previewEl = document.querySelector('.arcade-score');
+        if (previewEl) previewEl.textContent = 'HI-SCORE: ' + String(best).padStart(5, '0');
+      }
+    } catch (e) {}
+  }
+
   function updatePlayerBar() {
     var playerBarText = document.getElementById('playerBarText');
     if (!playerBarText) return;
@@ -148,6 +167,7 @@
 
     closeModal();
     updateWalletUI();
+    syncPlayerScore(addr);
   }
 
   function logout() {
@@ -252,6 +272,14 @@
       if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
   });
+
+  /* ---- Leaderboard refresh button ---- */
+  var lbRefreshBtn = document.getElementById('lbRefreshBtn');
+  if (lbRefreshBtn && typeof window.replayRenderLeaderboard === 'function') {
+    lbRefreshBtn.addEventListener('click', function () {
+      window.replayRenderLeaderboard();
+    });
+  }
 
   /* ---- High score display on index (wallet-specific) ---- */
   var hiScoreEl = document.querySelector('.arcade-score');
