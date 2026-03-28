@@ -1224,7 +1224,7 @@
       var score    = Math.floor(state.score);
       var siteUrl  = window.location.origin + (window.location.pathname.replace(/[^/]+$/, '') || '/');
       var gameUrl  = siteUrl + 'game.html';
-      var text     = '$REPLAY ARCADE \uD83D\uDD79\uFE0F I scored ' + score + '! Can you beat it? Play now \u2192 ' + gameUrl;
+      var text     = '$REPLAY ARCADE \uD83D\uDD79\uFE0F scored ' + score + ' \u2014 no kols, no insiders, just quarters. play now \u2192 ' + gameUrl;
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(showCopied).catch(showCopied);
