@@ -214,13 +214,13 @@
 }
 
 /* ============================================
-   BONK BOUNTY SECTION
+   BIGGER PICTURE SECTION
    ============================================ */
-.bonk-bounty {
+.bigger-picture {
   background: linear-gradient(180deg, var(--color-bg) 0%, rgba(255, 215, 0, 0.03) 50%, var(--color-bg) 100%);
 }
 
-.bonk-bounty-inner {
+.bigger-picture-inner {
   background: var(--color-bg-card);
   border: 1px solid rgba(255, 215, 0, 0.3);
   border-radius: 8px;
@@ -229,7 +229,7 @@
   position: relative;
 }
 
-.bonk-bounty-inner::before {
+.bigger-picture-inner::before {
   content: '';
   position: absolute;
   inset: -1px;
@@ -239,27 +239,21 @@
   z-index: 0;
 }
 
-.bonk-bounty-inner > * { position: relative; z-index: 1; }
+.bigger-picture-inner > * { position: relative; z-index: 1; }
 
-.bonk-bounty-text {
+.bigger-picture-text {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   margin-top: 1.5rem;
 }
 
-.bonk-bounty-text p {
+.bigger-picture-text p {
   font-size: clamp(0.9rem, 1.5vw, 1rem);
   color: var(--color-white);
   opacity: 0.85;
   line-height: 1.8;
   max-width: 760px;
-}
-
-.bonk-bounty-closing {
-  color: var(--color-yellow) !important;
-  opacity: 1 !important;
-  font-weight: 600;
 }
 
 /* ============================================
@@ -319,69 +313,6 @@
   letter-spacing: 0.1em;
 }
 
-/* ============================================
-   BONK GIVEAWAY BOX (rewards page)
-   ============================================ */
-.bonk-giveaway-box {
-  background: rgba(255, 215, 0, 0.04);
-  border: 1px solid rgba(255, 215, 0, 0.35);
-  border-radius: 8px;
-  padding: 2rem 2.5rem;
-  margin-top: 1.5rem;
-  position: relative;
-}
-
-.bonk-giveaway-label {
-  font-family: var(--font-pixel);
-  font-size: 0.45rem;
-  color: var(--color-yellow);
-  letter-spacing: 0.1em;
-  margin-bottom: 0.75rem;
-  opacity: 0.7;
-}
-
-.bonk-giveaway-title {
-  font-family: var(--font-pixel);
-  font-size: clamp(1rem, 3vw, 1.6rem);
-  color: var(--color-yellow);
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.2);
-  margin-bottom: 1.25rem;
-  line-height: 1.4;
-}
-
-.bonk-giveaway-desc {
-  font-size: clamp(0.88rem, 1.5vw, 1rem);
-  color: var(--color-white);
-  opacity: 0.85;
-  line-height: 1.8;
-  margin-bottom: 1rem;
-}
-
-.bonk-giveaway-desc strong {
-  color: var(--color-yellow);
-  font-weight: 700;
-}
-
-.bonk-giveaway-warning {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-  padding: 1rem 1.25rem;
-  background: rgba(255, 0, 128, 0.06);
-  border: 1px solid rgba(255, 0, 128, 0.3);
-  border-radius: var(--radius);
-  font-size: 0.88rem;
-  color: var(--color-pink);
-  line-height: 1.6;
-  font-weight: 600;
-}
-
-.bonk-giveaway-warning-icon {
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  margin-top: 0.1rem;
-}
 
 /* ============================================
    FIRST VISIT POPUP

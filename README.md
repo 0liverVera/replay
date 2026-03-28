@@ -63,7 +63,7 @@ For GitHub Pages: push to a repo and enable Pages on the `main` branch root.
 | Chain | Solana |
 | Supply | 1,000,000,000 |
 | Tax | 0% |
-| Launch | Fair launch on BONKfun |
+| Launch | Fair launch on Pump.fun |
 | LP | Burned |
 
 ---
