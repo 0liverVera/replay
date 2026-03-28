@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>$REPLAY — Rewards</title>
+  <meta name="description" content="$REPLAY rewards program — arcade prizes, community rewards, and the BONK bounty. earn every week." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/rewards.css" />
+</head>
+<body>
+
+  <!-- CRT Scanline Overlay -->
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">$REPLAY</a>
+      <div class="nav-right">
+        <a href="game.html" class="nav-link">PLAY</a>
+        <a href="index.html#tokenomics" class="nav-link">SPECS</a>
+        <a href="index.html#community" class="nav-link">COMMUNITY</a>
+        <a href="rewards.html" class="nav-link nav-link-rewards nav-link-active">REWARDS</a>
+        <div class="wallet-area" id="walletArea">
+          <button class="btn-wallet" id="walletBtn">LOG IN</button>
+          <button class="btn-logout hidden" id="logoutBtn" title="Log out">LOG OUT</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Wallet Modal -->
+  <div class="wallet-modal-backdrop hidden" id="walletModal">
+    <div class="wallet-modal">
+      <button class="wallet-modal-close" id="walletModalClose" aria-label="Close">&times;</button>
+      <h2 class="wallet-modal-title">SIGN IN TO PLAY</h2>
+      <div class="modal-field">
+        <label class="modal-label" for="xUsernameInput">X / TWITTER HANDLE <span class="modal-label-opt">(optional)</span></label>
+        <input
+          type="text"
+          class="wallet-modal-input"
+          id="xUsernameInput"
+          placeholder="@yourhandle"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="walletInput">SOLANA WALLET</label>
+        <input
+          type="text"
+          class="wallet-modal-input"
+          id="walletInput"
+          placeholder="Paste your wallet address..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+      <div class="wallet-modal-error hidden" id="walletError">Invalid wallet address</div>
+      <button class="btn-primary wallet-modal-confirm" id="walletConfirm">CONFIRM</button>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="section rewards-hero" id="rewards-hero">
+    <div class="container">
+      <div class="section-tag fade-in">// GIVE BACK</div>
+      <h1 class="rewards-hero-title fade-in">REWARDS</h1>
+      <p class="rewards-hero-sub fade-in">most coins extract their community. we reward ours.</p>
+      <p class="rewards-hero-sub fade-in">every week you hold, play, and post — you earn. this isn't a promise on a roadmap. it starts week one.</p>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <div class="section-tag fade-in">// HOW IT WORKS</div>
+      <h2 class="section-title fade-in">THE SYSTEM</h2>
+      <p class="section-desc fade-in">there are two ways to earn with $REPLAY. play the game. or spread the word. do both and you're first in line.</p>
+
+      <div class="reward-tracks fade-in">
+
+        <!-- Track 1: Arcade -->
+        <div class="reward-card reward-card-arcade">
+          <div class="reward-card-icon">&#128377;</div>
+          <div class="reward-card-title">ARCADE</div>
+          <div class="reward-card-sub">play to earn</div>
+          <p class="reward-card-desc">the top 5 players on the leaderboard at the end of each week split the arcade prize pool. no luck. no raffle. pure skill.</p>
+          <div class="prize-list">
+            <div class="prize-row">
+              <span class="prize-medal">&#129351;</span>
+              <span class="prize-place">1st place</span>
+              <span class="prize-amount">$200</span>
+            </div>
+            <div class="prize-row">
+              <span class="prize-medal">&#129352;</span>
+              <span class="prize-place">2nd place</span>
+              <span class="prize-amount">$125</span>
+            </div>
+            <div class="prize-row">
+              <span class="prize-medal">&#129353;</span>
+              <span class="prize-place">3rd place</span>
+              <span class="prize-amount">$100</span>
+            </div>
+            <div class="prize-row">
+              <span class="prize-medal prize-medal-num">4</span>
+              <span class="prize-place">4th place</span>
+              <span class="prize-amount">$50</span>
+            </div>
+            <div class="prize-row">
+              <span class="prize-medal prize-medal-num">5</span>
+              <span class="prize-place">5th place</span>
+              <span class="prize-amount">$25</span>
+            </div>
+          </div>
+          <div class="prize-total">$500 / week</div>
+          <p class="reward-card-note">leaderboard resets weekly. new week, new chance.</p>
+          <a href="game.html" class="btn-primary reward-btn">PLAY NOW</a>
+        </div>
+
+        <!-- Track 2: Community -->
+        <div class="reward-card reward-card-community">
+          <div class="reward-card-icon">&#128226;</div>
+          <div class="reward-card-title">COMMUNITY</div>
+          <div class="reward-card-sub">spread the word</div>
+          <p class="reward-card-desc">5 community members are selected each week based on genuine participation. post about $REPLAY on X. be active in the telegram. create content. help others. no bots. no spam. just real ones.</p>
+          <div class="prize-list">
+            <div class="prize-row">
+              <span class="prize-medal">&#127881;</span>
+              <span class="prize-place">5 winners</span>
+              <span class="prize-amount">$100 each</span>
+            </div>
+          </div>
+          <div class="prize-total">$500 / week</div>
+          <div class="what-counts">
+            <p class="what-counts-item">posting about $REPLAY on X with genuine engagement</p>
+            <p class="what-counts-item">being active and helpful in the telegram</p>
+            <p class="what-counts-item">creating memes, threads, or content about $REPLAY</p>
+            <p class="what-counts-item">bringing new people into the community</p>
+            <p class="what-counts-item">just showing up consistently and being part of this</p>
+          </div>
+          <p class="reward-card-note">winners are chosen by the team. quality over quantity. one real post beats 50 spam tweets.</p>
+          <a href="#" class="btn-primary reward-btn reward-btn-community" target="_blank" rel="noopener noreferrer">JOIN TELEGRAM</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BONK Bounty Section -->
+  <section class="section bonk-bounty" id="bonk-bounty">
+    <div class="container">
+      <div class="bonk-bounty-inner fade-in">
+        <div class="section-tag">// THE BIGGER PICTURE</div>
+        <h2 class="section-title">THE BONK BOUNTY</h2>
+        <div class="bonk-bounty-text">
+          <p>$REPLAY is competing in the BONKfun Bagwork Bounty — a $50,000 challenge to find the strongest new community on Solana.</p>
+          <p>if our community wins, the rewards don't stop at $500 a week. they get much bigger.</p>
+          <p>we've seen coins where the community is bag holding from scam launches. devs disappear. insiders dump. and somehow the community keeps posting. keeps holding. keeps the coin alive out of pure stubbornness.</p>
+          <p>now imagine what happens when you reward that energy instead of extracting it.</p>
+          <p>if $REPLAY wins the BONK bounty, a significant portion goes right back to the community that made it happen. the people who showed up early. the ones who held. the ones who posted. the ones who played. you'll be rewarded for believing before there was a reason to.</p>
+          <p class="bonk-bounty-closing">this isn't a vague roadmap promise. the bounty winners are announced April 1st. you'll know within a week.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OG Status Section -->
+  <section class="section og-status" id="og-status">
+    <div class="container">
+      <div class="section-tag fade-in">// DAY ONES</div>
+      <h2 class="section-title fade-in">OG STATUS</h2>
+      <p class="section-desc fade-in">the people who show up in week one are the ones who built this. we're tracking who was here from the start. early holders. early players. early community members. when the rewards scale up, OGs eat first.</p>
+      <div class="og-counter fade-in">
+        <span class="og-counter-label">CURRENT OGs</span>
+        <span class="og-counter-value">---</span>
+      </div>
+      <div class="og-cta fade-in" id="ogCta">
+        <button class="btn-primary" id="ogLoginBtn">LOG IN TO SECURE YOUR SPOT</button>
+      </div>
+      <div class="og-wallet-display hidden fade-in" id="ogWalletDisplay">
+        <span class="og-wallet-label">your wallet is registered.</span>
+        <span class="og-wallet-addr" id="ogWalletAddr"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">$REPLAY</div>
+        <p class="footer-tagline">$REPLAY — bringing back what crypto took from us. 2026.</p>
+        <div class="footer-links">
+          <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">Twitter</a>
+          <span class="footer-sep">|</span>
+          <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">Telegram</a>
+          <span class="footer-sep">|</span>
+          <a href="#" class="footer-link" target="_blank" rel="noopener noreferrer">BONKfun</a>
+        </div>
+        <p class="footer-disclaimer">$REPLAY is a memecoin on Solana for entertainment purposes. Not financial advice. Do your own research.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/leaderboard.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // OG status: show wallet if logged in
+    (function () {
+      var wallet = localStorage.getItem('replay_wallet');
+      var ogCta  = document.getElementById('ogCta');
+      var ogDisplay = document.getElementById('ogWalletDisplay');
+      var ogAddr    = document.getElementById('ogWalletAddr');
+      var ogLoginBtn = document.getElementById('ogLoginBtn');
+
+      function updateOgSection() {
+        var w = localStorage.getItem('replay_wallet');
+        if (w) {
+          if (ogCta) ogCta.classList.add('hidden');
+          if (ogDisplay) ogDisplay.classList.remove('hidden');
+          if (ogAddr) ogAddr.textContent = w.slice(0, 4) + '...' + w.slice(-4);
+        } else {
+          if (ogCta) ogCta.classList.remove('hidden');
+          if (ogDisplay) ogDisplay.classList.add('hidden');
+        }
+      }
+
+      updateOgSection();
+
+      if (ogLoginBtn) {
+        ogLoginBtn.addEventListener('click', function () {
+          var btn = document.getElementById('walletBtn');
+          if (btn) btn.click();
+        });
+      }
+
+      // Re-check after wallet login
+      window.addEventListener('replayWalletChanged', updateOgSection);
+    })();
+  </script>
+</body>
+</html>

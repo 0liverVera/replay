@@ -156,6 +156,15 @@ body { animation: screenFlicker 8s infinite; }
 }
 .nav-link:hover { color: var(--color-blue); }
 
+.nav-link-rewards {
+  color: var(--color-yellow) !important;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+.nav-link-rewards:hover {
+  color: var(--color-yellow) !important;
+  text-shadow: 0 0 14px rgba(255, 215, 0, 0.8);
+}
+
 /* ---- Wallet Area ---- */
 .wallet-area {
   display: flex;
