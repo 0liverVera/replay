@@ -226,22 +226,21 @@
   <section class="section leaderboard" id="leaderboard">
     <div class="container">
       <div class="section-tag">// HIGH SCORES</div>
-      <h2 class="section-title">HALL OF FAME</h2>
-      <p class="section-desc">Top players. Real wallets. No faking it.</p>
-      <div class="lb-panel">
-        <div class="lb-header">
-          <span class="lb-col-rank">RANK</span>
-          <span class="lb-col-wallet">PLAYER</span>
-          <span class="lb-col-score">SCORE</span>
-        </div>
-        <div id="leaderboardList" class="lb-list">
-          <div class="lb-loading">LOADING...</div>
-        </div>
-        <div class="lb-footer">
-          <a href="game.html" class="btn-primary btn-pulse lb-cta">PLAY TO RANK UP</a>
-          <button class="lb-refresh" id="lbRefreshBtn" title="Refresh leaderboard">↻ REFRESH</button>
-        </div>
+      <h2 class="section-title">LEADERBOARD</h2>
+      <div class="leaderboard-wrap">
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th>RANK</th>
+              <th>PLAYER</th>
+              <th>SCORE</th>
+            </tr>
+          </thead>
+          <tbody id="homeLbBody"></tbody>
+        </table>
       </div>
+      <p class="lb-cta" style="margin-bottom:1.5rem">Play the game. Beat the score. Claim your spot.</p>
+      <a href="game.html#leaderboard" class="btn-primary">VIEW FULL LEADERBOARD</a>
     </div>
   </section>
 
@@ -287,9 +286,8 @@
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js"></script>
   <script src="js/leaderboard.js"></script>
   <script src="js/main.js"></script>
+  <script>replayLoadLeaderboard('homeLbBody', 3);</script>
 </body>
 </html>
