@@ -290,6 +290,28 @@
     hiScoreEl.textContent = 'HI-SCORE: ' + (stored ? Math.floor(Number(stored)).toLocaleString() : '00000');
   }
 
+  /* ---- First-visit popup ---- */
+  var fvBackdrop = document.getElementById('fvBackdrop');
+  if (fvBackdrop) {
+    var fvSeen = localStorage.getItem('replay_fv_seen');
+    if (!fvSeen) {
+      setTimeout(function () {
+        fvBackdrop.classList.remove('hidden');
+      }, 1200);
+    }
+    function closeFv() {
+      fvBackdrop.classList.add('hidden');
+      localStorage.setItem('replay_fv_seen', '1');
+    }
+    var fvClose   = document.getElementById('fvClose');
+    var fvDismiss = document.getElementById('fvDismiss');
+    if (fvClose)   fvClose.addEventListener('click', closeFv);
+    if (fvDismiss) fvDismiss.addEventListener('click', closeFv);
+    fvBackdrop.addEventListener('click', function (e) {
+      if (e.target === fvBackdrop) closeFv();
+    });
+  }
+
   /* ---- Fade-in scroll observer ---- */
   var fadeEls = document.querySelectorAll('.fade-in');
   if (fadeEls.length && 'IntersectionObserver' in window) {

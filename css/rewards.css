@@ -319,6 +319,190 @@
   letter-spacing: 0.1em;
 }
 
+/* ============================================
+   BONK GIVEAWAY BOX (rewards page)
+   ============================================ */
+.bonk-giveaway-box {
+  background: rgba(255, 215, 0, 0.04);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 8px;
+  padding: 2rem 2.5rem;
+  margin-top: 1.5rem;
+  position: relative;
+}
+
+.bonk-giveaway-label {
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  color: var(--color-yellow);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+  opacity: 0.7;
+}
+
+.bonk-giveaway-title {
+  font-family: var(--font-pixel);
+  font-size: clamp(1rem, 3vw, 1.6rem);
+  color: var(--color-yellow);
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.2);
+  margin-bottom: 1.25rem;
+  line-height: 1.4;
+}
+
+.bonk-giveaway-desc {
+  font-size: clamp(0.88rem, 1.5vw, 1rem);
+  color: var(--color-white);
+  opacity: 0.85;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.bonk-giveaway-desc strong {
+  color: var(--color-yellow);
+  font-weight: 700;
+}
+
+.bonk-giveaway-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 0, 128, 0.06);
+  border: 1px solid rgba(255, 0, 128, 0.3);
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  color: var(--color-pink);
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.bonk-giveaway-warning-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+/* ============================================
+   FIRST VISIT POPUP
+   ============================================ */
+.fv-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 6000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: modalFadeIn 0.4s ease forwards;
+}
+
+.fv-modal {
+  background: var(--color-bg-card);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 8px;
+  padding: 2.5rem 2rem;
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 0 60px rgba(255, 215, 0, 0.1), 0 0 120px rgba(255, 215, 0, 0.04);
+}
+
+.fv-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color var(--transition);
+}
+.fv-close:hover { color: var(--color-white); }
+
+.fv-tag {
+  font-family: var(--font-pixel);
+  font-size: 0.4rem;
+  color: var(--color-yellow);
+  letter-spacing: 0.12em;
+  margin-bottom: 0.75rem;
+  opacity: 0.7;
+}
+
+.fv-title {
+  font-family: var(--font-pixel);
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  color: var(--color-yellow);
+  text-shadow: 0 0 16px rgba(255, 215, 0, 0.5);
+  margin-bottom: 1.25rem;
+  line-height: 1.4;
+}
+
+.fv-text {
+  font-size: 0.92rem;
+  color: var(--color-white);
+  opacity: 0.85;
+  line-height: 1.75;
+  margin-bottom: 0.85rem;
+}
+
+.fv-text strong {
+  color: var(--color-yellow);
+  font-weight: 700;
+}
+
+.fv-text em {
+  color: var(--color-pink);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.fv-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 0, 128, 0.06);
+  border: 1px solid rgba(255, 0, 128, 0.3);
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  color: var(--color-pink);
+  line-height: 1.6;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.fv-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.fv-btn-rewards {
+  text-align: center;
+  display: block;
+}
+
+.fv-btn-dismiss {
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  font-family: var(--font-pixel);
+  font-size: 0.4rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  text-align: center;
+  padding: 0.5rem;
+  transition: color var(--transition);
+}
+.fv-btn-dismiss:hover { color: var(--color-white); }
+
 /* ---- Fade-in scroll animation ---- */
 .fade-in {
   opacity: 0;

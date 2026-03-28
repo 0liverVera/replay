@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/rewards.css" />
 </head>
 <body>
 
@@ -64,6 +65,24 @@
       </div>
       <div class="wallet-modal-error hidden" id="walletError">Invalid wallet address</div>
       <button class="btn-primary wallet-modal-confirm" id="walletConfirm">CONFIRM</button>
+    </div>
+  </div>
+
+  <!-- First Visit Popup -->
+  <div class="fv-backdrop hidden" id="fvBackdrop">
+    <div class="fv-modal">
+      <button class="fv-close" id="fvClose" aria-label="Close">&times;</button>
+      <div class="fv-tag">// BONK BOUNTY</div>
+      <div class="fv-title">WE NEED YOU.</div>
+      <p class="fv-text">$REPLAY is competing in the <strong>BONKfun Bagwork Bounty</strong> — a $50,000 challenge to find the strongest community on Solana.</p>
+      <p class="fv-text">help us win by playing, posting, and holding. if we win — <strong>massive giveaway.</strong> only people who were active <em>before</em> the win get in. the snapshot is taken the moment it's decided.</p>
+      <div class="fv-warning">
+        <span>&#9888;</span> show up now or miss the giveaway. no late entries. no exceptions.
+      </div>
+      <div class="fv-actions">
+        <a href="rewards.html" class="btn-primary fv-btn-rewards">SEE REWARDS &amp; GIVEAWAY</a>
+        <button class="fv-btn-dismiss" id="fvDismiss">i'm already in</button>
+      </div>
     </div>
   </div>
 
