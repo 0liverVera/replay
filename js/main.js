@@ -234,7 +234,7 @@
 
   /* ---- Intersection Observer — fade-in on scroll ---- */
   var fadeTargets = document.querySelectorAll(
-    '.section, .spec-card, .terminal-line, .hero-content, .arcade-preview, .community-links'
+    '.section, .htb-step, .terminal-line, .hero-content, .arcade-preview, .community-links'
   );
 
   if (fadeTargets.length) {
@@ -258,9 +258,9 @@
     line.style.transitionDelay = (i * 0.15) + 's';
   });
 
-  /* ---- Staggered spec cards ---- */
-  document.querySelectorAll('.spec-card').forEach(function (card, i) {
-    card.style.transitionDelay = (i * 0.07) + 's';
+  /* ---- Staggered how-to-buy steps ---- */
+  document.querySelectorAll('.htb-step').forEach(function (step, i) {
+    step.style.transitionDelay = (i * 0.12) + 's';
   });
 
   /* ---- Smooth anchor scrolling ---- */

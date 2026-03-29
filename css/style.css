@@ -812,52 +812,87 @@ body { animation: screenFlicker 8s infinite; }
 }
 
 .htb-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  max-width: 680px;
-  margin: 0 auto 2.5rem;
-  background: var(--color-border);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto 3rem;
+  position: relative;
+}
+
+/* Connecting line between step badges */
+.htb-steps::before {
+  content: '';
+  position: absolute;
+  top: 2rem;
+  left: calc(100% / 8);
+  right: calc(100% / 8);
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(0, 212, 255, 0.35) 15%,
+    rgba(0, 212, 255, 0.35) 85%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 .htb-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
-  padding: 1.75rem 2rem;
   background: var(--color-bg-card);
-  text-align: left;
-  transition: background var(--transition);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 2rem 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
-.htb-step:hover { background: #161616; }
+.htb-step:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 28px rgba(0, 212, 255, 0.1), 0 8px 32px rgba(0,0,0,0.3);
+  transform: translateY(-5px);
+}
 
-.htb-step-num {
+.htb-num {
   font-family: var(--font-pixel);
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   color: var(--color-blue);
   text-shadow: var(--glow-blue);
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 50%;
+  background: rgba(0, 212, 255, 0.06);
   flex-shrink: 0;
-  line-height: 1;
-  min-width: 2.5rem;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+.htb-step:hover .htb-num {
+  background: rgba(0, 212, 255, 0.12);
+  box-shadow: var(--glow-blue);
 }
 
 .htb-step-title {
   font-family: var(--font-pixel);
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   color: var(--color-white);
   letter-spacing: 0.08em;
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
+  line-height: 1.7;
+  text-align: center;
 }
 
 .htb-step-desc {
-  font-size: 0.95rem;
-  color: #999;
+  font-size: 0.88rem;
+  color: #888;
   line-height: 1.7;
   margin: 0;
+  text-align: center;
 }
 
 /* ============================================
@@ -1257,6 +1292,11 @@ body { animation: screenFlicker 8s infinite; }
 
   .hero { padding: 7rem 1.5rem 3rem; }
 
+  .htb-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .htb-steps::before { display: none; }
+
   .terminal-block { padding: 2rem 1.25rem 1.5rem; }
 
   .wallet-modal {
@@ -1276,14 +1316,9 @@ body { animation: screenFlicker 8s infinite; }
     font-size: 0.9rem;
   }
 
-  .htb-step {
-    gap: 1rem;
-    padding: 1.25rem 1rem;
-  }
-
-  .htb-step-num {
-    font-size: 0.8rem;
-    min-width: 2rem;
+  .htb-steps {
+    grid-template-columns: 1fr;
+    max-width: 380px;
   }
 
   .btn-primary {
