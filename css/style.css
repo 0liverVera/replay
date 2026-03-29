@@ -601,6 +601,89 @@ body { animation: screenFlicker 8s infinite; }
   gap: 0.75rem;
 }
 
+/* ---- Contract Address bar ---- */
+.hero-ca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding: 0.6rem 1rem 0.6rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 100px;
+  background: rgba(255,255,255,0.03);
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hero-ca-label {
+  font-family: var(--font-pixel);
+  font-size: 0.38rem;
+  color: var(--color-green);
+  text-shadow: var(--glow-green);
+  letter-spacing: 0.12em;
+  flex-shrink: 0;
+}
+
+.hero-ca-address {
+  font-family: var(--font-pixel);
+  font-size: 0.38rem;
+  color: var(--color-muted);
+  letter-spacing: 0.06em;
+  word-break: break-all;
+}
+
+.hero-ca-copy {
+  font-family: var(--font-pixel);
+  font-size: 0.35rem;
+  color: var(--color-blue);
+  background: transparent;
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 100px;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.hero-ca-copy:hover {
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: var(--glow-blue);
+}
+
+/* ---- Telegram / coming-soon toast ---- */
+.tg-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: #111;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  white-space: nowrap;
+}
+.tg-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+.tg-toast-title {
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  color: var(--color-blue);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+}
+.tg-toast-sub {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
 /* Floating pixel decorations */
 .hero-floats { position: absolute; inset: 0; pointer-events: none; }
 .float-pixel {

@@ -290,6 +290,42 @@
     hiScoreEl.textContent = 'HI-SCORE: ' + (stored ? Math.floor(Number(stored)).toLocaleString() : '00000');
   }
 
+  /* ---- Telegram coming-soon toast ---- */
+  var tgToast = document.createElement('div');
+  tgToast.className = 'tg-toast';
+  tgToast.innerHTML = '<div class="tg-toast-title">COMING SOON</div><div class="tg-toast-sub">we\'re building out the telegram — stay tuned.</div>';
+  document.body.appendChild(tgToast);
+
+  var tgTimer = null;
+  document.querySelectorAll('.btn-tg-soon').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      tgToast.classList.add('show');
+      clearTimeout(tgTimer);
+      tgTimer = setTimeout(function () { tgToast.classList.remove('show'); }, 2800);
+    });
+  });
+
+  /* ---- Copy CA button ---- */
+  var caCopyBtn = document.getElementById('caCopyBtn');
+  var caAddress = document.getElementById('caAddress');
+  if (caCopyBtn && caAddress) {
+    caCopyBtn.addEventListener('click', function () {
+      var addr = caAddress.textContent.trim();
+      if (addr === 'WORKING ON IT — DROPPING SOON') {
+        var orig = caCopyBtn.textContent;
+        caCopyBtn.textContent = 'SOON';
+        setTimeout(function () { caCopyBtn.textContent = orig; }, 1500);
+        return;
+      }
+      navigator.clipboard.writeText(addr).then(function () {
+        var orig = caCopyBtn.textContent;
+        caCopyBtn.textContent = 'COPIED!';
+        setTimeout(function () { caCopyBtn.textContent = orig; }, 1500);
+      });
+    });
+  }
+
   /* ---- Fade-in scroll observer ---- */
   var fadeEls = document.querySelectorAll('.fade-in');
   if (fadeEls.length && 'IntersectionObserver' in window) {
