@@ -802,71 +802,62 @@ body { animation: screenFlicker 8s infinite; }
 .arcade-btn.blue { background: rgba(0,100,200,0.25); border-color: #0066bb; color: rgba(0,180,255,0.8); }
 
 /* ============================================
-   TOKENOMICS SECTION
+   HOW TO BUY SECTION
    ============================================ */
-.tokenomics {
+.how-to-buy {
   background: var(--color-bg-alt);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
   text-align: center;
 }
 
-.specs-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.htb-steps {
+  display: flex;
+  flex-direction: column;
   gap: 1px;
+  max-width: 680px;
+  margin: 0 auto 2.5rem;
   background: var(--color-border);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   overflow: hidden;
-  max-width: 840px;
-  margin: 0 auto;
 }
 
-.spec-card {
+.htb-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1.75rem 2rem;
   background: var(--color-bg-card);
-  padding: 2rem 1.5rem;
-  transition: background var(--transition);
-  position: relative;
-}
-.spec-card:hover { background: #161616; }
-.spec-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 1.5rem; right: 1.5rem;
-  height: 1px;
-  background: transparent;
+  text-align: left;
   transition: background var(--transition);
 }
-.spec-card:hover::after { background: var(--color-blue); box-shadow: var(--glow-blue); }
+.htb-step:hover { background: #161616; }
 
-.spec-label {
+.htb-step-num {
   font-family: var(--font-pixel);
-  font-size: 0.4rem;
-  color: var(--color-muted);
-  letter-spacing: 0.1em;
-  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  color: var(--color-blue);
+  text-shadow: var(--glow-blue);
+  flex-shrink: 0;
+  line-height: 1;
+  min-width: 2.5rem;
 }
 
-.spec-value {
+.htb-step-title {
   font-family: var(--font-pixel);
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   color: var(--color-white);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
   line-height: 1.6;
 }
-.spec-value.green {
-  color: var(--color-green);
-  text-shadow: var(--glow-green);
-}
-.spec-value.pink {
-  color: var(--color-pink);
-  text-shadow: var(--glow-pink);
-}
-.spec-value small {
-  font-size: 0.5rem;
-  color: var(--color-muted);
-  display: block;
-  margin-top: 0.25rem;
+
+.htb-step-desc {
+  font-size: 0.95rem;
+  color: #999;
+  line-height: 1.7;
+  margin: 0;
 }
 
 /* ============================================
@@ -1266,10 +1257,6 @@ body { animation: screenFlicker 8s infinite; }
 
   .hero { padding: 7rem 1.5rem 3rem; }
 
-  .specs-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .terminal-block { padding: 2rem 1.25rem 1.5rem; }
 
   .wallet-modal {
@@ -1289,8 +1276,14 @@ body { animation: screenFlicker 8s infinite; }
     font-size: 0.9rem;
   }
 
-  .specs-grid {
-    grid-template-columns: 1fr 1fr;
+  .htb-step {
+    gap: 1rem;
+    padding: 1.25rem 1rem;
+  }
+
+  .htb-step-num {
+    font-size: 0.8rem;
+    min-width: 2rem;
   }
 
   .btn-primary {
