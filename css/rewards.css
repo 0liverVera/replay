@@ -40,6 +40,11 @@
   opacity: 0.85;
 }
 
+/* ---- How It Works section centering ---- */
+#how-it-works {
+  text-align: center;
+}
+
 /* ---- Reward Tracks ---- */
 .reward-tracks {
   display: grid;
@@ -64,6 +69,7 @@
   gap: 1.25rem;
   position: relative;
   overflow: hidden;
+  text-align: left;
 }
 
 .reward-card::before {
@@ -227,6 +233,7 @@
   padding: 3rem 2.5rem;
   box-shadow: 0 0 40px rgba(255, 215, 0, 0.06), inset 0 0 60px rgba(255, 215, 0, 0.02);
   position: relative;
+  text-align: center;
 }
 
 .bigger-picture-inner::before {
@@ -246,6 +253,7 @@
   flex-direction: column;
   gap: 1.25rem;
   margin-top: 1.5rem;
+  text-align: left;
 }
 
 .bigger-picture-text p {
@@ -254,6 +262,7 @@
   opacity: 0.85;
   line-height: 1.8;
   max-width: 760px;
+  margin: 0 auto;
 }
 
 /* ============================================
