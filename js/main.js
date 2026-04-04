@@ -306,26 +306,6 @@
     });
   });
 
-  /* ---- Copy CA button ---- */
-  var caCopyBtn = document.getElementById('caCopyBtn');
-  var caAddress = document.getElementById('caAddress');
-  if (caCopyBtn && caAddress) {
-    caCopyBtn.addEventListener('click', function () {
-      var addr = caAddress.textContent.trim();
-      if (addr === 'WORKING ON IT — DROPPING SOON') {
-        var orig = caCopyBtn.textContent;
-        caCopyBtn.textContent = 'SOON';
-        setTimeout(function () { caCopyBtn.textContent = orig; }, 1500);
-        return;
-      }
-      navigator.clipboard.writeText(addr).then(function () {
-        var orig = caCopyBtn.textContent;
-        caCopyBtn.textContent = 'COPIED!';
-        setTimeout(function () { caCopyBtn.textContent = orig; }, 1500);
-      });
-    });
-  }
-
   /* ---- Fade-in scroll observer ---- */
   var fadeEls = document.querySelectorAll('.fade-in');
   if (fadeEls.length && 'IntersectionObserver' in window) {
